@@ -1,4 +1,4 @@
-float calibration = 0.00; //change this value to calibrate
+float calibration = 22; //change this value to calibrate
 const int analogInPin = A0; 
 int sensorValue = 0; 
 unsigned long int avgValue; 

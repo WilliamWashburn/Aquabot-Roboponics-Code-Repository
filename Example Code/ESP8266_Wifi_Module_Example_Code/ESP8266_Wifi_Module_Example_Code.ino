@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
-#define RX 10
-#define TX 11
+#define RX 18
+#define TX 19
 String AP = "WIFI_NAME";       // CHANGE ME
 String PASS = "WIFI_PASSWORD"; // CHANGE ME
 String API = "YOUR_API_KEY";   // CHANGE ME

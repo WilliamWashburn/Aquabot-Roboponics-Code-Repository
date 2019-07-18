@@ -1,8 +1,8 @@
 /* Hook Up Scheme
 ESP8266 | Arduino
 -----------------
-     RX | 11
-     TX | 10
+     RX | 19
+     TX | 18
     GND | GND
     VCC | 3.3V
   CH_PD | 3.3V
@@ -13,7 +13,7 @@ DS18B20 | Arduino
 ------------------
      VCC | 5v
      GND | GND
-    Data | 2
+    Data | 22
 
 pH probe | Arduino
 ------------------
@@ -34,11 +34,11 @@ pH probe | Arduino
 
 //--------------------Pin Definitions-------------------------------------------------
 //pins for software serial connection
-#define RX 11
-#define TX 10
+#define RX 19
+#define TX 18
 
 //pin for temperature sensor
-#define ONE_WIRE_BUS 2
+#define ONE_WIRE_BUS 23
 
 // Setup a oneWire instance to communicate with any OneWire devices  
 OneWire oneWire(ONE_WIRE_BUS);
@@ -69,9 +69,13 @@ int buf[10],temp;
 
 //--------------------Setup()------------------------------------------------------------
 void setup() {
+  Serial.println("Beginning Setup");
+  
 	Serial.begin(9600);
 	sensors.begin(); //this is the one wire bus that can connect more sensors
 	esp8266.begin(115200);
+
+  Serial.println("Connecting to Access Point");
 	sendCommand("AT",5,"OK");
 	sendCommand("AT+CWMODE=1",5,"OK");
 	sendCommand("AT+CWJAP=\""+ AP +"\",\""+ PASS +"\"",20,"OK");
@@ -81,7 +85,7 @@ void setup() {
 void loop() {
 	int tempData = getTempData();
 	int pHData = getpHData();
-	
+
 	uploadToThingSpeak(tempData, Temperature,API,HOST);
 	uploadToThingSpeak(pHData,pH,API,HOST);
 }
