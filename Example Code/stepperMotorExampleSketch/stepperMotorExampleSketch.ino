@@ -1,6 +1,6 @@
-int PUL=7; //define Pulse pin
-int DIR=6; //define Direction pin
-int ENA=5; //define Enable Pin
+int PUL=5; //define Pulse pin
+int DIR=4; //define Direction pin
+int ENA=3; //define Enable Pin
 void setup() {
   pinMode (PUL, OUTPUT);
   pinMode (DIR, OUTPUT);

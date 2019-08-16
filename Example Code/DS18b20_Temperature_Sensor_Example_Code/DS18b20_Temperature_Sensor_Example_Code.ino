@@ -1,38 +1,27 @@
-/********************************************************************/
-// First we include the libraries
-#include <OneWire.h> 
+#include <OneWire.h>
 #include <DallasTemperature.h>
-/********************************************************************/
-// Data wire is plugged into pin 2 on the Arduino 
-#define ONE_WIRE_BUS 23 
-/********************************************************************/
-// Setup a oneWire instance to communicate with any OneWire devices  
-// (not just Maxim/Dallas temperature ICs) 
-OneWire oneWire(ONE_WIRE_BUS); 
-/********************************************************************/
-// Pass our oneWire reference to Dallas Temperature. 
+
+// Assign to pin 10 of your Arduino to the DS18B20
+#define ONE_WIRE_BUS 7
+
+// Create a onewire instanace
+OneWire oneWire(ONE_WIRE_BUS);
+
+// Declare a DS18B20 Instance and assing the OneWire reference to it.
 DallasTemperature sensors(&oneWire);
-/********************************************************************/ 
-void setup(void) 
+
+void setup(void)
+{
+  // Start serial port
+  Serial.begin(9600);
+  //Start the DallasTemperature Library
+    sensors.begin();
+}
+
+void loop(void)
 { 
- // start serial port 
- Serial.begin(9600); 
- Serial.println("Dallas Temperature IC Control Library Demo"); 
- // Start up the library 
- sensors.begin(); 
-} 
-void loop(void) 
-{ 
- // call sensors.requestTemperatures() to issue a global temperature 
- // request to all devices on the bus 
-/********************************************************************/
- Serial.print(" Requesting temperatures..."); 
- sensors.requestTemperatures(); // Send the command to get temperature readings 
- Serial.println("DONE"); 
-/********************************************************************/
- Serial.print("Temperature is: "); 
- Serial.print(sensors.getTempCByIndex(0)); // Why "byIndex"?  
-   // You can have more than one DS18B20 on the same bus.  
-   // 0 refers to the first IC on the wire 
-   delay(1000); 
+  sensors.requestTemperatures(); // Tell the DS18B20 to get make a measurement
+  Serial.println(sensors.getTempCByIndex(0),4); // Get that temperature and print it.
+  Serial.println(); 
+  delay(1000); 
 }

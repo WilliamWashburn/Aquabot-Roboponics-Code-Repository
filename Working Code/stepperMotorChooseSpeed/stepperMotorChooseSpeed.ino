@@ -37,12 +37,12 @@ Power Supply | TB6600 (driver)
 */
 
 //The motor is controlled through these 3 pins
-int PUL=5; //define Pulse pin
-int DIR=6; //define Direction pin
-int ENA=7; //define Enable Pin
+int PUL=10; //define Pulse pin
+int DIR=9; //define Direction pin
+int ENA=11; //define Enable Pin
 
 //The delayTime is the time (in microseconds) between steps
-int delayTime = 500; //between 0 and 32767
+int delayTime = 800; //between 0 and 32767
 //pulseWidth is the time (in microseconds) it waits for the motor to make a step
 int pulseWidth = 50; //this should be kept constant
 
@@ -52,7 +52,7 @@ void setup() {
   pinMode (DIR, OUTPUT);
   pinMode (ENA, OUTPUT);
 
-  digitalWrite(ENA,LOW);
+  digitalWrite(ENA,LOW); //pull low to enable the motor
 
 }
 
@@ -62,12 +62,11 @@ void loop() {
       delayTime = receiveSerialData().toInt();
   }
   Serial.println("The delay time is: " + String(delayTime));
-  
   //Starts moving forward
   Serial.println("Forward");
   for (int i=0; i<6400; i++)
   {
-    digitalWrite(DIR,LOW);
+    digitalWrite(DIR,LOW); //down
     digitalWrite(PUL,HIGH);
     delayMicroseconds(pulseWidth);
     digitalWrite(PUL,LOW);
@@ -78,7 +77,7 @@ void loop() {
   Serial.println("Backward");
   for (int i=0; i<6400; i++)
   {
-    digitalWrite(DIR,HIGH);
+    digitalWrite(DIR,HIGH); //up
     digitalWrite(PUL,HIGH);
     delayMicroseconds(pulseWidth);
     digitalWrite(PUL,LOW);
