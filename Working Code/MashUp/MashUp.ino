@@ -56,9 +56,9 @@ boolean found = false;
 //{-----------------------------STEPPER-----------------------------------------------------------------
 
 //The motor is controlled through these 3 pins
-int PUL=10; //define Pulse pin
-int DIR=9; //define Direction pin
-int ENA=11; //define Enable Pin
+int PUL=11; //define Pulse pin
+int DIR=10; //define Direction pin
+int ENA=12; //define Enable Pin
 
 //The delayTime is the time (in microseconds) between steps
 int delayTime = 800; //between 0 and 32767
