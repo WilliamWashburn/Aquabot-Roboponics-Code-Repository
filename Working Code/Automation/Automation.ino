@@ -1,5 +1,4 @@
-
-#include "Aquabotics.h"
+#include <Aquabotics.h>
 
 //Variable Defintions
 /*Need to provide:
@@ -24,8 +23,8 @@ int delayTime1 = 800; //between 0 and 32767
 int pulseWidth1 = 50; //this should be kept constant
 
 //creating stepper motor instances: sets pinmodes, disables the motor, 
-Stepper plateform(int ENA1, int DIR1, int PUL1, int delayTime1, int pulseWidth1, int BUMP1, int BUMP2)
-Stepper track(int ENA2, int DIR2, int PUL2, int delayTime2, int pulseWidth2, int BUMP3, int BUMP4)
+Stepper plateform(int ENA1, int DIR1, int PUL1, int delayTime1, int pulseWidth1, int BUMP1, int BUMP2);
+Stepper track(int ENA2, int DIR2, int PUL2, int delayTime2, int pulseWidth2, int BUMP3, int BUMP4);
 
 void setup() {
 	Serial.begin(9600);
