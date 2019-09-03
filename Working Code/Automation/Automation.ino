@@ -1,55 +1,59 @@
-#include <Aquabotics.h>
+#include <Aquabot.h>
 
-//Variable Defintions
-/*Need to provide:
-	Stepper
-		Pins for ENA,DIR,PUL
-		Time for delay and pulse width
-		Pins for cooresponding bumper switches
-	Time
-		Current time, time adjust on/off times
-		pin for relay
-*/
+//Time start Settings:
+
+int startingHour = 11; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
+int seconds = 0;
+int minutes = 24;
+int hours = startingHour;
+int days = 0;
+
+//Accuracy settings
+
+int dailyErrorFast = 0; // set the average number of milliseconds your microcontroller's time is fast on a daily basis
+int dailyErrorBehind = 0; // set the average number of milliseconds your microcontroller's time is behind on a daily basis
+
+int correctedToday = 1; // do not change this variable, one means that the time has already been corrected today for the error in your boards crystal. This is true for the first day because you just set the time when you uploaded the sketch.
+//}
+
+//Time setting for Lights
+int hourLightsOn = 7; //this is 24 hour time
+int minuteLightsOn = 0;
+int hourLightsOff = 19; //this is 24 hour time
+int minuteLightsOff = 0;
 
 
-//plateform motor pins
-int PUL1=10; //define Pulse pin
-int DIR1=9; //define Direction pin
-int ENA1=11; //define Enable Pin
+Stepper plateform(11,10,12,1000,50);
+Stepper cart(6,5,7,800,50);
+Stepper camera(3,2,4,800,50);
 
-//The delayTime is the time (in microseconds) between steps
-int delayTime1 = 800; //between 0 and 32767
-//pulseWidth is the time (in microseconds) it waits for the motor to make a step
-int pulseWidth1 = 50; //this should be kept constant
+Light growLights(49);
 
-//creating stepper motor instances: sets pinmodes, disables the motor, 
-Stepper plateform(int ENA1, int DIR1, int PUL1, int delayTime1, int pulseWidth1, int BUMP1, int BUMP2);
-Stepper track(int ENA2, int DIR2, int PUL2, int delayTime2, int pulseWidth2, int BUMP3, int BUMP4);
+Time time(startingHour,
+          seconds,
+          minutes,
+          days,
+          dailyErrorFast,
+          dailyErrorBehind,
+          correctedToday,
+          hourLightsOn,
+          minuteLightsOn,
+          hourLightsOff,
+          minuteLightsOff);
 
 void setup() {
-	Serial.begin(9600);
-  
-	Serial.println("Serial Commands for Stepper Control:");
-	Serial.println("    '+' enables the plateform motor");
-	Serial.println("    '-' disables the plateform motor");
-	Serial.println("    '0' enables the track motor");
-	Serial.println("    '9' disables the track motor");
-	Serial.println("    'w' sends plateform up");
-	Serial.println("    's' sends plateform down");
-	Serial.println("    'a' sends track left?");
-	Serial.println("    'd' sends track right?");
+  Serial.begin(9600);
+  Serial.println("Starting program..");
 }
 
 void loop() {
+	plateform.stepMotor();
+  cart.stepMotor();
+  camera.stepMotor();
 	handleSerial();
 
-	plateform.stepMotor();
-	track.stepMotor();
-
-	plateform.detectCollision();
-	track.detectCollision();
+  
 }
-
 
 void handleSerial() {
 	while (Serial.available() > 0) {
@@ -67,18 +71,36 @@ void handleSerial() {
 			case '+':
 				plateform.enable();
 				break;
-			case 'a':
-				track.up();
-				break;
-			case 'd':
-				track.down();
-				break;
-			case '9':
-				track.disable();
-				break;
-			case '0':
-				track.enable();
-				break;
-    }
-  }
+      case 'i':
+        cart.enable();
+        break;
+      case 'k':
+        cart.disable();
+        break;
+      case 'a':
+        cart.up();
+        break;
+      case 'd':
+        cart.down();
+        break;
+      case 'u':
+        camera.enable();
+        break;
+      case 'j':
+        camera.disable();
+        break;
+      case 'q':
+        camera.up();
+        break;
+      case 'e':
+        camera.down();
+        break;
+      case '1':
+        growLights.lightsOn();
+        break;
+      case '0':
+        growLights.lightsOff();
+        break;
+		}
+	}
 }
