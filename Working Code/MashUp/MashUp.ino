@@ -72,9 +72,9 @@ unsigned long timeLast = 0;
 
 //Time start Settings:
 
-int startingHour = 11; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
+int startingHour = 14; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
 int seconds = 0;
-int minutes = 24;
+int minutes = 25;
 int hours = startingHour;
 int days = 0;
 
@@ -90,7 +90,7 @@ int correctedToday = 1; // do not change this variable, one means that the time 
 //Time setting for Lights
 int hourLightsOn = 7; //this is 24 hour time
 int minuteLightsOn = 0;
-int hourLightsOff = 19; //this is 24 hour time
+int hourLightsOff = 1; //this is 24 hour time
 int minuteLightsOff = 0;
 
 //Pin Definitions
