@@ -18,6 +18,9 @@ class Stepper
 	void enable();
 	void up();
 	void down();
+	void hold();
+	void holdOn();
+	void holdOff();
 	
   private:
 	int _ENA;
@@ -26,6 +29,8 @@ class Stepper
 	
 	int _delayTime;
 	int _pulseWidth;
+	
+	bool _held; //true if should be held, false if should be free
 };
 //}
 

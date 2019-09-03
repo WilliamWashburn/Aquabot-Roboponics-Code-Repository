@@ -2,9 +2,9 @@
 
 //Time start Settings:
 
-int startingHour = 11; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
+int startingHour = 16; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
 int seconds = 0;
-int minutes = 24;
+int minutes = 33;
 int hours = startingHour;
 int days = 0;
 
@@ -19,13 +19,13 @@ int correctedToday = 1; // do not change this variable, one means that the time 
 //Time setting for Lights
 int hourLightsOn = 7; //this is 24 hour time
 int minuteLightsOn = 0;
-int hourLightsOff = 19; //this is 24 hour time
+int hourLightsOff = 1; //this is 24 hour time
 int minuteLightsOff = 0;
 
 
-Stepper plateform(11,10,12,1000,50);
-Stepper cart(6,5,7,800,50);
-Stepper camera(3,2,4,800,50);
+Stepper plateform(11,10,12,800,50); //(PUL,DIR,ENA,delaytime,pulsewidth)
+Stepper cart(6,5,7,2000,50);
+Stepper camera(3,2,4,5000,50);
 
 Light growLights(49);
 
@@ -44,12 +44,38 @@ Time time(startingHour,
 void setup() {
   Serial.begin(9600);
   Serial.println("Starting program..");
+
+  digitalWrite(35,LOW);
+
+  Serial.println("Serial Commands");
+  Serial.println("    '+' plateform enable");
+  Serial.println("    '-' plateform disable");
+  Serial.println("    'w' plateform up");
+  Serial.println("    's' plateform down");Serial.println();
+  
+  Serial.println("    'i' cart enable");
+  Serial.println("    'k' cart disable");
+  Serial.println("    'd' cart away from door");
+  Serial.println("    'a' cart toward the door");Serial.println();
+  
+  Serial.println("    'u' camera enable");
+  Serial.println("    'j' camera disable");
+  Serial.println("    'm' camera hold on");
+  Serial.println("    'n' camera hold off");
+  Serial.println("    'e' camera clockwise");
+  Serial.println("    'q' camera counter-clockwise");Serial.println();
+  
+  Serial.println("    '0' turns lights off");
+  Serial.println("    '1' turns lights on");Serial.println();
+
+  Serial.println("    'c' captures a photo'");
 }
 
 void loop() {
 	plateform.stepMotor();
   cart.stepMotor();
   camera.stepMotor();
+  //camera.hold(); //only is held if camera.holdOn() is called
 	handleSerial();
 
   
@@ -77,10 +103,10 @@ void handleSerial() {
       case 'k':
         cart.disable();
         break;
-      case 'a':
+      case 'd':
         cart.up();
         break;
-      case 'd':
+      case 'a':
         cart.down();
         break;
       case 'u':
@@ -89,17 +115,27 @@ void handleSerial() {
       case 'j':
         camera.disable();
         break;
-      case 'q':
+      case 'e':
         camera.up();
         break;
-      case 'e':
+      case 'q':
         camera.down();
         break;
+      case 'm':
+        camera.holdOn();
+        break;
+      case 'n':
+        camera.holdOff();
       case '1':
         growLights.lightsOn();
         break;
       case '0':
         growLights.lightsOff();
+        break;
+      case 'c':
+        digitalWrite(35,HIGH);
+        delay(50);
+        digitalWrite(35,LOW);
         break;
 		}
 	}

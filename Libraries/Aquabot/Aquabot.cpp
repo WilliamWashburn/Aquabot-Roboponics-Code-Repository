@@ -21,14 +21,19 @@ Stepper::Stepper(int PUL, int DIR, int ENA, int delayTime, int pulseWidth)
 	_ENA = ENA;
 	_pulseWidth = pulseWidth;
 	_delayTime = delayTime;
+	
+	bool _held = false;
 }
 
 void Stepper::stepMotor()
 {
-	digitalWrite(_PUL,HIGH);
-	delayMicroseconds(_pulseWidth);
-	digitalWrite(_PUL,LOW);
-	delayMicroseconds(_delayTime);
+	if(digitalRead(_ENA)==LOW) {
+		digitalWrite(_PUL,HIGH);
+		delayMicroseconds(_pulseWidth);
+		digitalWrite(_PUL,LOW);
+		delayMicroseconds(_delayTime);
+	}
+	
 }
 
 void Stepper::enable()
@@ -50,6 +55,28 @@ void Stepper::down()
 {
 	digitalWrite(_DIR,LOW);
 }
+
+void Stepper::hold()
+{
+	if(_held = true){
+		digitalWrite(_ENA,HIGH);
+		digitalWrite(_DIR,HIGH);
+		delay(10);
+		digitalWrite(_DIR,LOW);
+		delay(10);
+	}
+}
+
+void Stepper::holdOn()
+{
+	_held = true;
+}
+
+void Stepper::holdOff()
+{
+	_held = false;
+}
+
 
 //}
 
