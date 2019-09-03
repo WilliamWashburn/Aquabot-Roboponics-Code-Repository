@@ -97,6 +97,7 @@ int minuteLightsOff = 0;
 const int lightRelay = 49;
 //}
 
+//{----------------------SETUP-----------------------------------------------------------------------------
 void setup() {
 	Serial.begin(9600);
 	Serial2.begin(115200); //Change Serial2 to ESP8266 for Arduino Uno throughout code
@@ -135,6 +136,9 @@ void setup() {
 	Serial.println("    's' sets direction as down");
 }
 
+//}
+
+//{-------------------LOOP----------------------------------------------------------------
 void loop() {
 	handleSerial();
 	updateTime();
@@ -166,7 +170,9 @@ void loop() {
 	*/
 }
 
+//}
 
+//---------------FUNCTION DEFINTIONS--------------------------------------------
 void checkLights() {
   if (hours == hourLightsOn && minutes == minuteLightsOn) {
     digitalWrite(lightRelay,LOW); //turn lights on
@@ -176,6 +182,7 @@ void checkLights() {
     digitalWrite(lightRelay,HIGH); //turn lights off
   }
 }
+
 void updateTime(){
   timeNow = millis()/1000; // the number of milliseconds that have passed since boot
   seconds = timeNow - timeLast;//the number of seconds that have passed since the last time 60 seconds was reached.
