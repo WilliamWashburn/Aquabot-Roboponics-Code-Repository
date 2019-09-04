@@ -138,7 +138,9 @@ void loop() {
   */
 
   if(digitalRead(6) == HIGH) {
+    digitalWrite(13, HIGH);
     myCAMSaveToSDFile(myCAM1);
+    digitalWrite(13,LOW);
     delay(1000);
   }
 
