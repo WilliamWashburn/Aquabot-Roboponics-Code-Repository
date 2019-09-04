@@ -137,6 +137,9 @@ void handleSerial() {
         delay(50);
         digitalWrite(35,LOW);
         break;
+      case 't':
+        time.printTime();
+        break;
 		}
 	}
 }

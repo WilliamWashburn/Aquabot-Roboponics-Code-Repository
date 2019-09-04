@@ -70,14 +70,17 @@ class Time
 		bool lightStatus; //for keeping track of status of the lights (on or off)
 		void updateTime();
 		void checkLights();
+		void printTime();
+		
+		int startingHour;
+		int seconds;
+		int minutes;
+		int hours;
+		int days;
 		
 	private:
 		//variables for holding time
-		int _startingHour;
-		int _seconds;
-		int _minutes;
-		int _hours;
-		int _days;
+		
 		unsigned long _timeNow;
 		unsigned long _timeLast;
 

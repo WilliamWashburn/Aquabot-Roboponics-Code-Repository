@@ -117,11 +117,6 @@ Time::Time(int startingHour,
 	unsigned long _timeNow = 0;
 	unsigned long _timeLast = 0;
 	
-	int _hours = startingHour;
-	int _startingHour = startingHour;
-	int _seconds = seconds;
-	int _minutes = minutes;
-	int _days = days;
 	int _dailyErrorFast = dailyErrorFast;
 	int _dailyErrorBehind = dailyErrorBehind;
 	int _correctedToday = correctedToday;
@@ -133,32 +128,32 @@ Time::Time(int startingHour,
 
 void Time::updateTime(){
 	_timeNow = millis()/1000; // the number of milliseconds that have passed since boot
-	_seconds = _timeNow - _timeLast;//the number of seconds that have passed since the last time 60 seconds was reached.
+	seconds = _timeNow - _timeLast;//the number of seconds that have passed since the last time 60 seconds was reached.
   
-	if (_seconds == 60) {
+	if (seconds == 60) {
 		_timeLast = _timeNow;
-		_minutes = _minutes + 1;
+		minutes = minutes + 1;
 	}
   
 	//if one minute has passed, start counting milliseconds from zero again and add one minute to the clock.
 
-	if (_minutes == 60){ 
-		_minutes = 0;
-		_hours = _hours + 1;
+	if (minutes == 60){ 
+		minutes = 0;
+		hours = hours + 1;
 	}
   
   // if one hour has passed, start counting minutes from zero and add one hour to the clock
   
-	if (_hours == 24){
-		_hours = 0;
-		_days = _days + 1;
+	if (hours == 24){
+		hours = 0;
+		days = days + 1;
     }
     
     //if 24 hours have passed , add one day
   
-  if (_hours ==(24 - _startingHour) && _correctedToday == 0){
+  if (hours ==(24 - startingHour) && _correctedToday == 0){
     delay(_dailyErrorFast*1000);
-    _seconds = _seconds + _dailyErrorBehind;
+    seconds = seconds + _dailyErrorBehind;
     _correctedToday = 1;
   }
   
@@ -167,7 +162,7 @@ void Time::updateTime(){
   // The only way to find out how far off your boards internal clock is, is by uploading this sketch at exactly the same time as the real time, letting it run for a few days 
   // and then determine how many seconds slow/fast your boards internal clock is on a daily average. (24 hours).
   
-  if (_hours == 24 - _startingHour + 2) { 
+  if (hours == 24 - startingHour + 2) { 
     _correctedToday = 0;
   }
   
@@ -177,25 +172,35 @@ void Time::updateTime(){
   
   
   //Serial.print("The time is:           ");
-  //Serial.print(_days);
+  //Serial.print(days);
 	//Serial.print(":");
-  //Serial.print(_hours);
+  //Serial.print(hours);
   //Serial.print(":");
-  //Serial.print(_minutes);
+  //Serial.print(minutes);
   //Serial.print(":"); 
-  //Serial.println(_seconds); 
+  //Serial.println(seconds); 
 }
 
 void Time::checkLights(){
-	if (_hours == _hourLightsOn && _minuteLightsOn <= _minutes <= _minuteLightsOn + 5) {
+	if (hours == _hourLightsOn && _minuteLightsOn <= minutes <= _minuteLightsOn + 5) {
 		lightStatus = true;
 	}
   
-	if (_hours == _hourLightsOff && _minuteLightsOff <= _minutes <= _minuteLightsOff + 5) {
+	if (hours == _hourLightsOff && _minuteLightsOff <= minutes <= _minuteLightsOff + 5) {
 		lightStatus = false;
 	}
 }
 
+void Time::printTime(){
+	Serial.print("The time is:           ");
+	Serial.print(days);
+	Serial.print(":");
+	Serial.print(hours);
+	Serial.print(":");
+	Serial.print(minutes);
+	Serial.print(":"); 
+	Serial.println(seconds); 
+}
 
 //}
 
