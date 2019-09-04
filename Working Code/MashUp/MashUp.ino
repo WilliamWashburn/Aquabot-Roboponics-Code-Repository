@@ -1,4 +1,5 @@
-//{----------------------Libraries ---------------------------------------------------
+
+ //{----------------------Libraries ---------------------------------------------------
 
 //libraries for temperature sensor
 #include <OneWire.h> 
@@ -72,9 +73,9 @@ unsigned long timeLast = 0;
 
 //Time start Settings:
 
-int startingHour = 14; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
+int startingHour = 10; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
 int seconds = 0;
-int minutes = 25;
+int minutes = 55;
 int hours = startingHour;
 int days = 0;
 
@@ -124,7 +125,11 @@ void setup() {
 	pinMode(5,INPUT_PULLUP);
 	digitalWrite(6,LOW);
 
-	digitalWrite(ENA,HIGH); //pull low to enable the motor
+  pinMode(35,OUTPUT);
+  digitalWrite(35,LOW);
+
+	digitalWrite(ENA,HIGH) ; //pull low to enable the motor
+  digitalWrite(4,HIGH);
 	
 	ec.begin();
 	sensors.begin(); //this is the one wire bus that can connect more sensors
@@ -144,7 +149,7 @@ void loop() {
 	updateTime();
 	checkLights();
 	handleSerial();
-	detectCollision();
+	//detectCollision();
 	stepMotor();
 	
 	/*
@@ -376,7 +381,11 @@ void handleSerial() {
 	case '8':
 		delayTime = 800;
 		break;
-
+  case 'c':
+    digitalWrite(35,HIGH);
+    delay(50);
+    digitalWrite(35,LOW);
+    break;
     }
   }
 }
