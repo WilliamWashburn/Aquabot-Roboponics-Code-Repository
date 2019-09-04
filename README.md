@@ -2,10 +2,10 @@
 
 This repository is divided into three folders:
 	
-	1. Example Code: Contains example code for sensors, wifi module, stepper motors, and camera.
+1. Example Code: Contains example code for sensors, wifi module, stepper motors, and camera.
 			These were mostly found either online or examples in libraries
-	2. Libraries: Contains a library that I wrote to simplify the main program (Automation.ino).
-	3. Working Code: Contains modifications of example code, usually a frankenstein combo of multiple exaple codes.		
+2. Libraries: Contains a library that I wrote to simplify the main program (Automation.ino).
+3. Working Code: Contains modifications of example code, usually a frankenstein combo of multiple exaple codes.		
 			
 			
 
