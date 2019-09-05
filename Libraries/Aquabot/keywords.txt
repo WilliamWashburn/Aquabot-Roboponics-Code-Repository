@@ -14,3 +14,4 @@ Light	KEYWORD1
 Time	KEYWORD1
 updateTime	KEYWORD2
 checkLights	KEYWORD2
+printTime	KEYWORD2

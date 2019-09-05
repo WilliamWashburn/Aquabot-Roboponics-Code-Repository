@@ -139,6 +139,8 @@ void handleSerial() {
         break;
       case 't':
         Serial.print("The time is currently: "); Serial.print(hours);
+        time.printTime();
+        break;
 		}
 	}
 }
