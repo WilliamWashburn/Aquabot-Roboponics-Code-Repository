@@ -137,6 +137,8 @@ void handleSerial() {
         delay(50);
         digitalWrite(35,LOW);
         break;
+      case 't':
+        Serial.print("The time is currently: "); Serial.print(hours);
 		}
 	}
 }
