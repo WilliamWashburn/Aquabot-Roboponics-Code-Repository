@@ -7,7 +7,7 @@ up	KEYWORD2
 down	KEYWORD2
 holdOn	KEYWORD2
 holdOff	KEYWORD2
-hold	KEYWORD2
+held	KEYWORD2
 lightsOn	KEYWORD2
 lightsOff	KEYWORD2
 Light	KEYWORD1

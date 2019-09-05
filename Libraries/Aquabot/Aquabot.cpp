@@ -1,8 +1,3 @@
-/*
-  Morse.cpp - Library for flashing Morse code.
-  Created by David A. Mellis, November 2, 2007.
-  Released into the public domain.
-*/
 
 #include "Arduino.h"
 #include "Aquabot.h"
@@ -23,27 +18,30 @@ Stepper::Stepper(int PUL, int DIR, int ENA, int delayTime, int pulseWidth)
 	_delayTime = delayTime;
 	
 	bool _held = false;
+	bool _moving = false;
 }
 
 void Stepper::stepMotor()
 {
-	if(digitalRead(_ENA)==LOW) {
+	if(digitalRead(_ENA)==LOW && _held == false) {
 		digitalWrite(_PUL,HIGH);
 		delayMicroseconds(_pulseWidth);
 		digitalWrite(_PUL,LOW);
 		delayMicroseconds(_delayTime);
+		//do not put any serial.prints here, it will cause problems moving the motor
+		//probably any delay between stepMotor being called will result in choppy motion/vibration
+
 	}
-	
 }
 
 void Stepper::enable()
 {
-	digitalWrite(_ENA,LOW);
+	digitalWrite(_ENA,LOW); //pull low to enable the motor
 }
 
 void Stepper::disable()
 {
-	digitalWrite(_ENA,HIGH);
+	digitalWrite(_ENA,HIGH); //pull low to enable the motor
 }
 
 void Stepper::up()
@@ -56,28 +54,22 @@ void Stepper::down()
 	digitalWrite(_DIR,LOW);
 }
 
-void Stepper::hold()
+bool Stepper::held()
 {
-	if(_held = true){
-		digitalWrite(_ENA,HIGH);
-		digitalWrite(_DIR,HIGH);
-		delay(10);
-		digitalWrite(_DIR,LOW);
-		delay(10);
-	}
+	return _held;
 }
 
 void Stepper::holdOn()
 {
 	_held = true;
+	//Serial.println("holdOn() was called _held = true");
 }
 
 void Stepper::holdOff()
 {
 	_held = false;
+	//Serial.println("holdOff() was called, _held =false");
 }
-
-
 //}
 
 //{ Light Class

@@ -25,7 +25,7 @@ int minuteLightsOff = 0;
 
 Stepper plateform(11,10,12,800,50); //(PUL,DIR,ENA,delaytime,pulsewidth)
 Stepper cart(6,5,7,2000,50);
-Stepper camera(3,2,4,5000,50);
+Stepper camera(3,2,4,10000,50);
 
 Light growLights(49);
 
@@ -48,20 +48,21 @@ void setup() {
   digitalWrite(35,LOW);
 
   Serial.println("Serial Commands");
-  Serial.println("    '+' plateform enable");
-  Serial.println("    '-' plateform disable");
+  Serial.println("    'h' enables all motors");
+  Serial.println("    'g' disables all motors");Serial.println();
+  
+  Serial.println("    '+' plateform unhold");
+  Serial.println("    '-' plateform hold");
   Serial.println("    'w' plateform up");
   Serial.println("    's' plateform down");Serial.println();
   
-  Serial.println("    'i' cart enable");
-  Serial.println("    'k' cart disable");
+  Serial.println("    'i' cart unhold");
+  Serial.println("    'k' cart hold");
   Serial.println("    'd' cart away from door");
   Serial.println("    'a' cart toward the door");Serial.println();
   
-  Serial.println("    'u' camera enable");
-  Serial.println("    'j' camera disable");
-  Serial.println("    'm' camera hold on");
-  Serial.println("    'n' camera hold off");
+  Serial.println("    'u' camera unhold");
+  Serial.println("    'j' camera hold");
   Serial.println("    'e' camera clockwise");
   Serial.println("    'q' camera counter-clockwise");Serial.println();
   
@@ -72,13 +73,7 @@ void setup() {
 }
 
 void loop() {
-	plateform.stepMotor();
-  cart.stepMotor();
-  camera.stepMotor();
-  //camera.hold(); //only is held if camera.holdOn() is called
 	handleSerial();
-
-  
 }
 
 void handleSerial() {
@@ -92,16 +87,33 @@ void handleSerial() {
 				plateform.down();
 				break;
 			case '-':
-				plateform.disable();
+				plateform.holdOn();
 				break;
 			case '+':
-				plateform.enable();
+				plateform.holdOff();
+        while(plateform.held() == false) {
+          plateform.stepMotor();
+          handleSerial();
+        }
 				break;
-      case 'i':
+      case 'h':
+        plateform.enable();
         cart.enable();
+        camera.enable();
         break;
-      case 'k':
+      case 'g':
+        plateform.disable();
         cart.disable();
+        camera.disable();
+        break;
+      case 'i':
+        cart.holdOff();
+        while(cart.held() == false) {
+          cart.stepMotor();
+          handleSerial();
+        }
+      case 'k':
+        cart.holdOn();
         break;
       case 'd':
         cart.up();
@@ -110,22 +122,20 @@ void handleSerial() {
         cart.down();
         break;
       case 'u':
-        camera.enable();
-        break;
+        camera.holdOff();
+        while(camera.held() == false) {
+          camera.stepMotor();
+          handleSerial();
+        }
       case 'j':
-        camera.disable();
-        break;
-      case 'e':
-        camera.up();
-        break;
-      case 'q':
-        camera.down();
-        break;
-      case 'm':
         camera.holdOn();
         break;
-      case 'n':
-        camera.holdOff();
+      case 'e':
+        camera.down();
+        break;
+      case 'q':
+        camera.up();
+        break;
       case '1':
         growLights.lightsOn();
         break;

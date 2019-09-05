@@ -1,8 +1,4 @@
-/*
-  Morse.h - Library for flashing Morse code.
-  Created by David A. Mellis, November 2, 2007.
-  Released into the public domain.
-*/
+
 #ifndef Aquabot_h
 #define Aquabot_h
 
@@ -18,7 +14,7 @@ class Stepper
 	void enable();
 	void up();
 	void down();
-	void hold();
+	bool held();
 	void holdOn();
 	void holdOff();
 	
@@ -31,6 +27,7 @@ class Stepper
 	int _pulseWidth;
 	
 	bool _held; //true if should be held, false if should be free
+	bool _moving; //true -> moving. false -> either held or free
 };
 //}
 
