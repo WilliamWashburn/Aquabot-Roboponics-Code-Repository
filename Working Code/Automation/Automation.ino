@@ -148,12 +148,16 @@ void handleSerial() {
         digitalWrite(35,LOW);
         while(digitalRead(34)==LOW){ //confirmation pin
           Serial.print("capturing photo...    ");
+          delay(500);
         }
         Serial.println("done");
         break;
       case 't':
         Serial.print("The time is currently: "); Serial.print(hours);
         time.printTime();
+        break;
+      case '5':
+        cart.goToStepCount(5000);
         break;
 		}
 	}
