@@ -48,6 +48,8 @@ bool CAM1_EXIST = false;
 
 //{-------------------------SETUP---------------------------------------------------------------
 void setup() {
+
+pinMode(8,OUTPUT);digitalWrite(8,LOW);
   
 // put your setup code here, to run once:
 uint8_t vid, pid;

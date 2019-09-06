@@ -45,8 +45,8 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Starting program..");
 
-  digitalWrite(35,LOW);
-
+  digitalWrite(35,OUTPUT);digitalWrite(35,LOW);
+  
   Serial.println("Serial Commands");
   Serial.println("    'h' enables all motors");
   Serial.println("    'g' disables all motors");Serial.println();
@@ -143,10 +143,10 @@ void handleSerial() {
         growLights.lightsOff();
         break;
       case 'c':
-        digitalWrite(35,HIGH);
+        digitalWrite(35,HIGH);//trigger pin
         delay(50);
         digitalWrite(35,LOW);
-        while(digitalRead(34)==LOW){
+        while(digitalRead(34)==LOW){ //confirmation pin
           Serial.print("capturing photo...    ");
         }
         Serial.println("done");
