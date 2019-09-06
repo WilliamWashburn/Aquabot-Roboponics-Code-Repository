@@ -146,6 +146,10 @@ void handleSerial() {
         digitalWrite(35,HIGH);
         delay(50);
         digitalWrite(35,LOW);
+        while(digitalRead(34)==LOW){
+          Serial.print("capturing photo...    ");
+        }
+        Serial.println("done");
         break;
       case 't':
         Serial.print("The time is currently: "); Serial.print(hours);
