@@ -1,3 +1,5 @@
+//This was adapted from the 4CAM example file. Now it just takes a picture when a pin is triggered and confirms a capture over another pin.
+
 // ArduCAM Mini demo (C)2017 Lee
 // Web: http://www.ArduCAM.com
 // This program is a demo of how to use most of the functions
@@ -137,12 +139,10 @@ void loop() {
   delay(5000);
   */
 
-  if(digitalRead(6) == HIGH) {
-    digitalWrite(13, HIGH);
+  if(digitalRead(9) == HIGH) {
     myCAMSaveToSDFile(myCAM1);
-    digitalWrite(13,LOW);
-    delay(1000);
-  }
+    digitalWrite(8,HIGH);delay(50);digitalWrite(8,LOW);
+    }
 
   //if digital pin high -> take picture
   //is capture is sucessful -> blink an LED
