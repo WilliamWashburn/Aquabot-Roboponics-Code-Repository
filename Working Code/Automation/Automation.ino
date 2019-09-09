@@ -97,14 +97,12 @@ void handleSerial() {
         }
 				break;
       case 'h':
-        plateform.enable();
-        cart.enable();
-        camera.enable();
+        plateform.enable();cart.enable();camera.enable();
+        Serial.println("Motors enabled");
         break;
       case 'g':
-        plateform.disable();
-        cart.disable();
-        camera.disable();
+        plateform.disable();cart.disable();camera.disable();
+        Serial.println("Motors disabled");
         break;
       case 'i':
         cart.holdOff();
@@ -157,8 +155,64 @@ void handleSerial() {
         time.printTime();
         break;
       case '5':
-        cart.goToStepCount(5000);
+        cart.goToStepCount(0);
+        camera.goToStepCount(-185);
+        plateform.goToStepCount(71543);
+        takePhoto();
+
+        cart.goToStepCount(3887);
+        camera.goToStepCount(-200);
+        plateform.goToStepCount(71543);
+        takePhoto();
+
+        cart.goToStepCount(3887*2);
+        camera.goToStepCount(-200);
+        plateform.goToStepCount(71543);
+        takePhoto();
+
+        cart.goToStepCount(3887*3);
+        camera.goToStepCount(-215);
+        plateform.goToStepCount(71543);
+        takePhoto();
+
+
+
+        cart.goToStepCount(3887*3);
+        camera.goToStepCount(215);
+        plateform.goToStepCount(102505);
+        takePhoto();
+
+        cart.goToStepCount(3887*2);
+        camera.goToStepCount(200);
+        plateform.goToStepCount(102505);
+        takePhoto();
+
+        cart.goToStepCount(3887);
+        camera.goToStepCount(200);
+        plateform.goToStepCount(102505);
+        takePhoto();
+
+        cart.goToStepCount(0);
+        camera.goToStepCount(185);
+        plateform.goToStepCount(102505);
+        takePhoto();
+
         break;
+      case 'z':
+        cart.zero(); plateform.zero(); camera.zero();
+        Serial.println("Coorinates zeroed");
 		}
 	}
+}
+
+void takePhoto(){
+  digitalWrite(35,HIGH);//trigger pin
+  delay(50);
+  digitalWrite(35,LOW);
+  Serial.print("capturing photo...    ");
+  while(digitalRead(34)==LOW){ //confirmation pin
+    Serial.print(".");
+    delay(500);
+  }
+  Serial.println("done");
 }

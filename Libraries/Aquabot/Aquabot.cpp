@@ -19,6 +19,8 @@ Stepper::Stepper(int PUL, int DIR, int ENA, int delayTime, int pulseWidth)
 	
 	bool _held = false;
 	bool _moving = false;
+	
+	long _stepCount = 0;
 }
 
 void Stepper::stepMotor()
@@ -30,7 +32,14 @@ void Stepper::stepMotor()
 		delayMicroseconds(_delayTime);
 		//do not put any serial.prints here, it will cause problems moving the motor
 		//probably any delay between stepMotor being called will result in choppy motion/vibration
-
+		
+		if (digitalRead(_DIR) == HIGH) {
+			_stepCount = _stepCount + 1;
+		}
+		
+		if (digitalRead(_DIR) == LOW) {
+			_stepCount = _stepCount - 1;
+		}
 	}
 }
 
@@ -63,6 +72,7 @@ void Stepper::holdOn()
 {
 	_held = true;
 	//Serial.println("holdOn() was called _held = true");
+	Serial.println(_stepCount);
 }
 
 void Stepper::holdOff()
@@ -70,6 +80,36 @@ void Stepper::holdOff()
 	_held = false;
 	//Serial.println("holdOff() was called, _held =false");
 }
+
+void Stepper::goToStepCount(long step)
+{
+	if (step > _stepCount) {
+		up();
+		holdOff();
+		while ( step > _stepCount) {
+			stepMotor();
+		}
+		holdOn();
+	}
+	
+	else if (step < _stepCount) {
+		down();
+		holdOff();
+		while ( step < _stepCount) {
+			stepMotor();
+		}
+		holdOn();
+	}
+	
+	else {
+	}
+}
+
+void Stepper::zero()
+{
+	_stepCount = 0;
+}
+
 //}
 
 //{ Light Class
@@ -90,7 +130,6 @@ void Light::lightsOff()
 {
 		digitalWrite(_lightRelay,HIGH); //turns on lights
 }	
-
 //}
 
 //{ Time Class
