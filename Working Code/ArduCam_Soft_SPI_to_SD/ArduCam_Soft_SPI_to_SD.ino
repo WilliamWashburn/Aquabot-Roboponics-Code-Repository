@@ -24,7 +24,7 @@
 #if !(defined (OV5640_MINI_5MP_PLUS)||defined (OV5642_MINI_5MP_PLUS))
 #error Please select the hardware platform and camera module in the ../libraries/ArduCAM/memorysaver.h file
 #endif
-#define   FRAMES_NUM    0x00
+#define FRAMES_NUM 0x00
 #define SD_CS 2
 const uint8_t SOFT_MISO_PIN = 5;
 const uint8_t SOFT_MOSI_PIN = 4;
