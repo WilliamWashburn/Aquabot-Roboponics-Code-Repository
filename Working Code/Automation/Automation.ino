@@ -2,9 +2,9 @@
 
 //Time start Settings:
 
-int startingHour = 12; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
+int startingHour = 15; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
 int seconds = 0;
-int minutes = 28;
+int minutes = 3;
 int hours = startingHour;
 int days = 0;
 
