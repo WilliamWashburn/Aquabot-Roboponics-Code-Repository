@@ -8,7 +8,7 @@
 class Stepper
 {
   public:
-    Stepper(int PUL, int DIR, int ENA, int delayTime, int pulseWidth);
+    Stepper(int, int, int, int, int);
     void stepMotor();
 	void disable();
 	void enable();
@@ -17,6 +17,8 @@ class Stepper
 	bool held();
 	void holdOn();
 	void holdOff();
+	void goToStepCount(long);
+	void zero();
 	
   private:
 	int _ENA;
@@ -28,6 +30,8 @@ class Stepper
 	
 	bool _held; //true if should be held, false if should be free
 	bool _moving; //true -> moving. false -> either held or free
+	
+	long _stepCount;
 };
 //}
 
@@ -37,7 +41,7 @@ class Stepper
 class Light
 {
 	public:
-		Light(int lightRelay);
+		Light(int);
 		void lightsOn();
 		void lightsOff();
 	private:
@@ -50,19 +54,7 @@ class Light
 class Time
 {
 	public:
-		Time(
-		int startingHour,
-		int seconds,
-		int minutes,
-		int days,
-		int dailyErrorFast,
-		int dailyErrorBehind,
-		int correctedToday,
-		int hourLightsOn,
-		int minuteLightsOn,
-		int hourLightsOff,
-		int minuteLightsOff
-		);
+		Time(int,int,int,int,int,int,int,int,int,int,int);
 		
 		bool lightStatus; //for keeping track of status of the lights (on or off)
 		void updateTime();

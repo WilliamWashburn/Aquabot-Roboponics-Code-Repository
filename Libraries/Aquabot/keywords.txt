@@ -15,3 +15,5 @@ Time	KEYWORD1
 updateTime	KEYWORD2
 checkLights	KEYWORD2
 printTime	KEYWORD2
+zero	KEYWORD2
+goToStepCount	KEYWORD2
