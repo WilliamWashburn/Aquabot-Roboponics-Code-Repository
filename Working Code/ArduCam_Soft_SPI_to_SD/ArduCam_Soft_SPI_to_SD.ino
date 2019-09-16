@@ -52,6 +52,8 @@ void setup() {
 pinMode(8,OUTPUT);digitalWrite(8,LOW);
 pinMode(A0,OUTPUT);digitalWrite(A0, HIGH);
 pinMode(A1,OUTPUT);digitalWrite(A1, LOW);
+
+delay(1000);digitalWrite(A0,LOW);
   
 // put your setup code here, to run once:
 uint8_t vid, pid;
@@ -144,7 +146,9 @@ void loop() {
   */
 
   if(digitalRead(9) == HIGH) {
+    digitalWrite(8,HIGH);delay(50);digitalWrite(8,LOW);
     if(CAM1_EXIST) {
+      digitalWrite(A0, HIGH);delay(500);digitalWrite(A0, LOW);
       myCAMSaveToSDFile(myCAM1);
     }
     digitalWrite(8,HIGH);delay(50);digitalWrite(8,LOW);
