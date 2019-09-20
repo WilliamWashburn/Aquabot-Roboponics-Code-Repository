@@ -52,7 +52,6 @@ void setup() {
 pinMode(8,OUTPUT);digitalWrite(8,LOW);
 pinMode(A0,OUTPUT);digitalWrite(A0, HIGH);
 pinMode(A1,OUTPUT);digitalWrite(A1, LOW);
-
 delay(1000);digitalWrite(A0,LOW);
   
 // put your setup code here, to run once:
@@ -129,7 +128,7 @@ myCAM1.write_reg(ARDUCHIP_FRAMES, FRAMES_NUM);
 #if defined (OV5640_MINI_5MP_PLUS)
   myCAM1.OV5640_set_JPEG_size(OV5640_320x240);delay(1000);
 #else
-  myCAM1.OV5642_set_JPEG_size(OV5642_1600x1200);delay(1000);
+  myCAM1.OV5642_set_JPEG_size(OV5642_2048x1536);delay(1000);
 #endif
 delay(1000);
 myCAM1.clear_fifo_flag();
@@ -146,13 +145,15 @@ void loop() {
   */
 
   if(digitalRead(9) == HIGH) {
-    digitalWrite(8,HIGH);delay(50);digitalWrite(8,LOW);
+    digitalWrite(A0,HIGH);delay(50);digitalWrite(A0,LOW); //flash LED once to confirm request
     if(CAM1_EXIST) {
-      digitalWrite(A0, HIGH);delay(500);digitalWrite(A0, LOW);
       myCAMSaveToSDFile(myCAM1);
+      digitalWrite(8, HIGH);delay(500);digitalWrite(8, LOW);
     }
-    digitalWrite(8,HIGH);delay(50);digitalWrite(8,LOW);
-    }
+    for (int i=0;i<2;i++){
+      digitalWrite(A0,HIGH);delay(50);digitalWrite(A0,LOW);delay(50); //flash LED twice to confirm completion
+    }    
+  }
 
   //if digital pin high -> take picture
   //is capture is sucessful -> blink an LED

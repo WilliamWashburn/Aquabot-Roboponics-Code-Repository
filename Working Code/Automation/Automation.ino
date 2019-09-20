@@ -4,7 +4,7 @@
 
 int startingHour = 16; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
 int seconds = 0;
-int minutes = 11;
+int minutes = 23;
 int hours = startingHour;
 int days = 0;
 
@@ -46,6 +46,7 @@ void setup() {
   Serial.println("Starting program..");
 
   digitalWrite(35,OUTPUT);digitalWrite(35,LOW);
+  pinMode(34,INPUT_PULLUP);
   
   Serial.println("Serial Commands");
   Serial.println("    'h' enables all motors");
@@ -141,20 +142,53 @@ void handleSerial() {
         growLights.lightsOff();
         break;
       case 'c':
-        digitalWrite(35,HIGH);//trigger pin
-        delay(50);
-        digitalWrite(35,LOW);
-        while(digitalRead(34)==LOW){ //confirmation pin
-          Serial.print("capturing photo...    ");
-          delay(500);
-        }
-        Serial.println("done");
+        takePhoto();
         break;
       case 't':
         Serial.print("The time is currently: "); Serial.print(hours);
         time.printTime();
         break;
       case '5':
+
+
+      //plateform level 1
+        cart.goToStepCount(0);
+        camera.goToStepCount(-185);
+        plateform.goToStepCount(9289);
+        takePhoto();
+
+        cart.goToStepCount(3887);
+        camera.goToStepCount(-200);
+        takePhoto();
+
+        cart.goToStepCount(3887*2);
+        camera.goToStepCount(-200);
+        takePhoto();
+
+        cart.goToStepCount(3887*3);
+        camera.goToStepCount(-215);
+        takePhoto();
+        
+      //plateform level 2
+        cart.goToStepCount(3887*3);
+        camera.goToStepCount(215);
+        plateform.goToStepCount(41899);
+        takePhoto();
+
+        cart.goToStepCount(3887*2);
+        camera.goToStepCount(200);
+        takePhoto();
+
+        cart.goToStepCount(3887);
+        camera.goToStepCount(200);
+        takePhoto();
+
+        cart.goToStepCount(0);
+        camera.goToStepCount(185);
+        takePhoto();
+
+        
+      //plateform level 3
         cart.goToStepCount(0);
         camera.goToStepCount(-185);
         plateform.goToStepCount(71543);
@@ -162,21 +196,17 @@ void handleSerial() {
 
         cart.goToStepCount(3887);
         camera.goToStepCount(-200);
-        plateform.goToStepCount(71543);
         takePhoto();
 
         cart.goToStepCount(3887*2);
         camera.goToStepCount(-200);
-        plateform.goToStepCount(71543);
         takePhoto();
 
         cart.goToStepCount(3887*3);
         camera.goToStepCount(-215);
-        plateform.goToStepCount(71543);
         takePhoto();
 
-
-
+        //plateform level 4
         cart.goToStepCount(3887*3);
         camera.goToStepCount(215);
         plateform.goToStepCount(102505);
@@ -184,20 +214,36 @@ void handleSerial() {
 
         cart.goToStepCount(3887*2);
         camera.goToStepCount(200);
-        plateform.goToStepCount(102505);
         takePhoto();
 
         cart.goToStepCount(3887);
         camera.goToStepCount(200);
-        plateform.goToStepCount(102505);
         takePhoto();
 
         cart.goToStepCount(0);
         camera.goToStepCount(185);
-        plateform.goToStepCount(102505);
+        takePhoto();
+
+        //plateform level 5
+        cart.goToStepCount(0);
+        camera.goToStepCount(-185);
+        plateform.goToStepCount(132342);
+        takePhoto();
+
+        cart.goToStepCount(3887);
+        camera.goToStepCount(-200);
+        takePhoto();
+
+        cart.goToStepCount(3887*2);
+        camera.goToStepCount(-200);
+        takePhoto();
+
+        cart.goToStepCount(3887*3);
+        camera.goToStepCount(-215);
         takePhoto();
 
         break;
+        
       case 'z':
         cart.zero(); plateform.zero(); camera.zero();
         Serial.println("Coorinates zeroed");
@@ -207,12 +253,13 @@ void handleSerial() {
 
 void takePhoto(){
   digitalWrite(35,HIGH);//trigger pin
-  delay(50);
+  delay(500);
   digitalWrite(35,LOW);
   Serial.print("capturing photo...    ");
   while(digitalRead(34)==LOW){ //confirmation pin
     Serial.print(".");
-    delay(500);
+    delay(200);
   }
   Serial.println("done");
+  delay(500);
 }
