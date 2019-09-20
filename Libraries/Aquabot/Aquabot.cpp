@@ -103,6 +103,7 @@ void Stepper::goToStepCount(long step)
 	
 	else {
 	}
+	delay(500);
 }
 
 void Stepper::zero()
