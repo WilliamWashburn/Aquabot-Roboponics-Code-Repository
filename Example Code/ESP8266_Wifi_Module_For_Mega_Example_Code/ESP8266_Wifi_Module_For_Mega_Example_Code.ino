@@ -19,6 +19,7 @@ void setup() {
 void loop() {
   valSensor = getSensorData();
   String getData = "GET /update?api_key=" + API + "&" + field + "=" + String(valSensor);
+  Serial.println();Serial.println(getData);Serial.println();
   sendCommand("AT+CIPMUX=1", 5, "OK");
   sendCommand("AT+CIPSTART=0,\"TCP\",\"" + HOST + "\"," + PORT, 15, "OK");
   sendCommand("AT+CIPSEND=0," + String(getData.length() + 4), 4, ">");

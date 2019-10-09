@@ -7,31 +7,31 @@
 //{----------STEPPER---------------------------------
 class Stepper
 {
-  public:
-    Stepper(int, int, int, int, int);
-    void stepMotor();
-	void disable();
-	void enable();
-	void up();
-	void down();
-	bool held();
-	void holdOn();
-	void holdOff();
-	void goToStepCount(long);
-	void zero();
+	public:
+		Stepper(int, int, int, int, int);
+		void stepMotor();
+		void disable();
+		void enable();
+		void up();
+		void down();
+		bool held();
+		void holdOn();
+		void holdOff();
+		void goToStepCount(long);
+		void zero();
 	
   private:
-	int _ENA;
-	int _DIR;
-	int _PUL;
-	
-	int _delayTime;
-	int _pulseWidth;
-	
-	bool _held; //true if should be held, false if should be free
-	bool _moving; //true -> moving. false -> either held or free
-	
-	long _stepCount;
+		int _ENA;
+		int _DIR;
+		int _PUL;
+		
+		int _delayTime;
+		int _pulseWidth;
+		
+		bool _held; //true if should be held, false if should be free
+		bool _moving; //true -> moving. false -> either held or free
+		
+		long _stepCount;
 };
 //}
 
@@ -102,4 +102,30 @@ class Camera
 };
 //}
 
+//{----------WIFI-------------------------------------
+
+class Wifi
+{
+	public:
+		Wifi();
+		void connectToAP(String,String);
+		void connectToThingSpeak(String,String,String);
+		void uploadToThingSpeak(double, String);
+	private:
+		void sendCommand(String, int, char*);
+		int _countTrueCommand;
+		int _countTimeCommand; 
+		bool _found;
+		
+		String _AP;
+		String _PASS;
+		String _API;
+		String _HOST;
+		String _PORT;
+};
+//}
+
+//{------------SENSORS--------------------------------
+
+//}
 #endif

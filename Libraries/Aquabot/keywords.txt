@@ -17,3 +17,7 @@ checkLights	KEYWORD2
 printTime	KEYWORD2
 zero	KEYWORD2
 goToStepCount	KEYWORD2
+Wifi	KEYWORD1
+uploadToThingSpeak	KEYWORD2
+connectToThingSpeak	KEYWORD2
+connectToAP	KEYWORD2
