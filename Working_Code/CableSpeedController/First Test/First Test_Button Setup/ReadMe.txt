@@ -1,0 +1,1 @@
+This first test file is from the first day of testing. We are using 4 buttons to control the left, right, up, and down motion of the cable system's cart. The cart is where the camera will be mounted.

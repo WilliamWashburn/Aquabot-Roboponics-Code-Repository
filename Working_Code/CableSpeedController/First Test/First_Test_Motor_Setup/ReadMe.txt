@@ -1,0 +1,1 @@
+Again from the first day of testing. We set it up so each button controlled a different motor. We were confused about ENA HIGH is disabled and LOW is enabled. Next step is to have the button control the direction of the cart (all motors move simultaneously but at different speeds/step counts (haven't decided which is best) depending on where the cart is in the region of motion.
