@@ -145,7 +145,7 @@ myCAM.clear_fifo_flag();
 #if defined (OV5640_MINI_5MP_PLUS)
   myCAM.OV5640_set_JPEG_size(OV5640_320x240);delay(1000);
 #else
-  myCAM.OV5642_set_JPEG_size(OV5642_320x240);delay(1000);
+  myCAM.OV5642_set_JPEG_size(OV5642_2048x1536);delay(1000);
 #endif
 //Start capture
 myCAM.start_capture();
