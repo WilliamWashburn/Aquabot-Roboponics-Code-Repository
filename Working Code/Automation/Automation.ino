@@ -2,11 +2,9 @@
 //--------------------------Variables---------------------------------------------------------------------------
 //Time start Settings:
 
-int startingHour = 17; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
-int seconds = 0;
-int minutes = 00;
-int hours = startingHour;
-int days = 0;
+int startingHour = 2; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
+int startingMinutes = 30 ;
+int day = 0;
 
 //Time Accuracy settings
 
@@ -27,6 +25,7 @@ String PASS = "roboponics"; // Network Password
 String API = "O46TGAFOY3QTK7GK"; //Get this from ThingSpeak.com
 String HOST = "api.thingspeak.com";
 String PORT = "80";
+String Temp = "field1";
 String pH = "field2";
 String EC = "field3";
 //-------------------------Initiation------------------------------------------------------------------------------
@@ -40,9 +39,8 @@ Light growLights(49);
 
 //Time init
 Time time(startingHour,
-          seconds,
-          minutes,
-          days,
+          startingMinutes,
+          day,
           dailyErrorFast,
           dailyErrorBehind,
           correctedToday,
@@ -53,49 +51,100 @@ Time time(startingHour,
           );
 
 Wifi wifi; //if initializer does not have inputs, dont put parentasis because the compiler will think its a function declaration
-
-
+double pHreading;
+double ECreading;
 //------------------------Setup--------------------------------------------------------------
 void setup() {
   Serial.begin(9600);
-  Serial3.begin(9600);
+
+  Serial3.begin(9600);//ph probe
+  Serial1.begin(9600);//EC probe
+  
+  Serial3.println("C,0"); //This command switchs the device for continuous reading to single reading
+  String response;
+  response = Serial3.readStringUntil("\n"); //reads *OK<cr>
+  Serial3.println("C,?");
+  response = Serial3.readStringUntil("\n"); //reads ?C,0<cr>
+  //Serial.print("pH probe response is : ");Serial.println(response);Serial.println();
+  
+  
+  Serial1.println("C,0"); //This command switchs the device for continuous reading to single reading
+  //Serial1.println("C,?");
+  response = Serial1.readStringUntil("\n");
+  //Serial.println(response);
+  Serial1.println("O,EC,0");
+  Serial1.println("O,TDS,1");
+  
   Serial.println("Starting program..");
+  
 
-  digitalWrite(35,OUTPUT);digitalWrite(35,LOW);
-  pinMode(34,INPUT_PULLUP);
-
+  digitalWrite(37,OUTPUT);digitalWrite(37,LOW); //camera trigger pin (tells the arduino that is controlling the camera to take a photo)
+  pinMode(36,INPUT); //confirmation pin (arduino controlling camera confirms to main arduino (running this script) that a photo was taken)
+                            //36 will be low when not confirming and high when confirming
 //wifi setup---------------------------------------------
   wifi.connectToAP(AP,PASS);
   wifi.connectToThingSpeak(API,HOST,PORT);
 //{-------------------------------------------------------
   printSerialCommands();
+  Serial.println("Setup Complete");
 }
 //}
 //---------------------loop-----------------------------------------
 void loop() {
-  //handleSerial();
-  //double data = 30;
+  //double data = 12;
   //wifi.uploadToThingSpeak(data,EC);
 
-  String pH = takepHReading();
-  Serial.println(pH);
-  //double EC = takeECReading();
+  /*
+  pHreading = takepHReading();
+  Serial.print("pH reading: ");Serial.println(pHreading);
+  wifi.uploadToThingSpeak(pHreading,pH);
+
+  delay(1000);
+  ECreading = takeECReading();
+  Serial.print("EC reading: ");Serial.println(ECreading);
+  wifi.uploadToThingSpeak(ECreading,EC);
+  
+ */
+  while (0 == time.minutes && 0 <= time.seconds && time.seconds<= 20){
+    Serial.println("Uploading to thingspeak. Please wait...");
+    Serial.print("time.hours: ");Serial.println(time.hours);
+    Serial.print("time.seconds: ");Serial.println(time.seconds);
+    Serial.print("time.minutes: ");Serial.println(time.minutes);
+    
+    pHreading = takepHReading();
+    Serial.print("pH reading: ");Serial.println(pHreading);
+    Serial.print("Uploading...");wifi.uploadToThingSpeak(pHreading,pH);Serial.println("done.");
+    
+    
+    Serial.print("EC reading: ");Serial.println(ECreading);
+    Serial.print("Uploading...");wifi.uploadToThingSpeak(ECreading,EC);Serial.println("done.");  
+    time.updateTime();
+    Serial.println();
+  }
+
+  if (2 == time.minutes && 0 <= time.seconds && time.seconds <= 20 && (time.hours == 12 || time.hours == 24)){
+    photoshoot();
+  }
+
+  handleSerial();
+  time.updateTime();
 }
 
 
 double takeECReading(){
-  
+    Serial1.println("R");
+    String ECReading = Serial1.readStringUntil("*OK\n");
+    double ECReadingD = ECReading.toDouble();
+    return ECReadingD;
 }
 
-
-
-
-
-
-
-
-
-
+//pH
+double takepHReading() {                                 //if the hardware serial port_3 receives a char
+    Serial3.println("R");
+    String phReading = Serial3.readStringUntil("*OK\n");
+    double phReadingD = phReading.toDouble();
+    return phReadingD;
+}
 
 
 
@@ -105,6 +154,14 @@ void handleSerial() {
 	while (Serial.available() > 0) {
 		char incomingCharacter = Serial.read();
 		switch (incomingCharacter) {
+      case 'b':
+        ECreading = takeECReading();
+        Serial.println(ECreading);
+      case 'z':
+        Serial.println("zero called");
+        cart.zero(); plateform.zero(); camera.zero();
+        Serial.println("Coorinates zeroed");
+        break;
 			case 'w':
 				plateform.up();
 				break;
@@ -135,6 +192,7 @@ void handleSerial() {
           cart.stepMotor();
           handleSerial();
         }
+        break;
       case 'k':
         cart.holdOn();
         break;
@@ -150,6 +208,7 @@ void handleSerial() {
           camera.stepMotor();
           handleSerial();
         }
+        break;
       case 'j':
         camera.holdOn();
         break;
@@ -169,134 +228,142 @@ void handleSerial() {
         takePhoto();
         break;
       case 't':
-        Serial.print("The time is currently: "); Serial.print(hours);
         time.printTime();
         break;
       case '5':
-        delay(5000);
-        int edgeOffset = 50;
-      //plateform level 1
-        cart.goToStepCount(0+edgeOffset);
-        camera.goToStepCount(215);
-        plateform.goToStepCount(9289);
-        takePhoto();
-
-        cart.goToStepCount(3887);
-        camera.goToStepCount(200);
-        takePhoto();
-
-
-        cart.goToStepCount(3887*2);
-        camera.goToStepCount(200);
-        takePhoto();
-
-        cart.goToStepCount(3887*3-edgeOffset);
-        camera.goToStepCount(185);
-        takePhoto();
-        
-      //plateform level 2
-        cart.goToStepCount(3887*3-edgeOffset);
-        camera.goToStepCount(-215);
-        plateform.goToStepCount(41899);
-        takePhoto();
-
-        cart.goToStepCount(3887*2);
-        camera.goToStepCount(-200);
-        takePhoto();
-
-        cart.goToStepCount(3887);
-        camera.goToStepCount(-200);
-        takePhoto();
-
-        cart.goToStepCount(0+edgeOffset);
-        camera.goToStepCount(-185);
-        takePhoto();
-
-        
-      //plateform level 3
-        cart.goToStepCount(0+edgeOffset);
-        camera.goToStepCount(185);
-        plateform.goToStepCount(71543);
-        takePhoto();
-
-        cart.goToStepCount(3887);
-        camera.goToStepCount(200);
-        takePhoto();
-
-        
-        camera.goToStepCount(200);
-        cart.goToStepCount(3887*2);
-        camera.goToStepCount(200);
-        takePhoto();
-
-        cart.goToStepCount(3887*3-edgeOffset);
-        camera.goToStepCount(215);
-        takePhoto();
-
-        //plateform level 4
-        cart.goToStepCount(3887*3-edgeOffset);
-        camera.goToStepCount(-215);
-        plateform.goToStepCount(102505);
-        takePhoto();
-
-        cart.goToStepCount(3887*2);
-        camera.goToStepCount(-200);
-        takePhoto();
-
-        cart.goToStepCount(3887);
-        camera.goToStepCount(-200);
-        takePhoto();
-
-        cart.goToStepCount(0+edgeOffset);
-        camera.goToStepCount(-185);
-        takePhoto();
-
-        //plateform level 5
-        cart.goToStepCount(0+edgeOffset);
-        camera.goToStepCount(185);
-        plateform.goToStepCount(132342);
-        takePhoto();
-
-        cart.goToStepCount(3887);
-        camera.goToStepCount(200);
-        takePhoto();
-
-        
-        cart.goToStepCount(3887*2);
-        camera.goToStepCount(200);
-        takePhoto();
-
-        cart.goToStepCount(3887*3-edgeOffset);
-        camera.goToStepCount(215);
-        takePhoto();
-
+        photoshoot();
         break;
         
-      case 'z':
-        Serial.println("zero called");
-        cart.zero(); plateform.zero(); camera.zero();
-        Serial.println("Coorinates zeroed");
-        break;
+      
 
 		}
 	}
 }
 
+void photoshoot(){
+
+  growLights.lightsOn();
+  plateform.enable();cart.enable();camera.enable();
+  Serial.println("Motors enabled");
+  
+  /*
+//plateform level 1
+  plateform.goToStepCount(9289);
+  cart.goToStepCount(250);
+  camera.goToStepCount(237);
+  takePhoto();
+
+  cart.goToStepCount(3315);
+  camera.goToStepCount(204);
+  takePhoto();
+
+
+  cart.goToStepCount(7973);
+  camera.goToStepCount(204);
+  takePhoto();
+
+  cart.goToStepCount(11154);
+  camera.goToStepCount(174);
+  takePhoto();
+  
+//plateform level 2
+  plateform.goToStepCount(41899);
+  cart.goToStepCount(11154);
+  camera.goToStepCount(-174);
+  takePhoto();
+
+  cart.goToStepCount(7973);
+  camera.goToStepCount(-204);
+  takePhoto();
+
+  cart.goToStepCount(3315);
+  camera.goToStepCount(-204);
+  takePhoto();
+
+  cart.goToStepCount(250);
+  camera.goToStepCount(-237);
+  takePhoto();
+
+  
+//plateform level 3
+  plateform.goToStepCount(71543);
+  cart.goToStepCount(250);
+  camera.goToStepCount(237);
+  takePhoto();
+
+  cart.goToStepCount(3315);
+  camera.goToStepCount(204);
+  takePhoto();
+
+  
+  camera.goToStepCount(200);
+  cart.goToStepCount(7973);
+  camera.goToStepCount(204);
+  takePhoto();
+
+  cart.goToStepCount(11154);
+  camera.goToStepCount(174);
+  takePhoto();
+*/
+  //plateform level 4
+  plateform.goToStepCount(102505);
+  cart.goToStepCount(11154);
+  camera.goToStepCount(-174);
+  takePhoto();
+
+  cart.goToStepCount(7973);
+  camera.goToStepCount(-204);
+  takePhoto();
+
+  cart.goToStepCount(3315);
+  camera.goToStepCount(-204);
+  takePhoto();
+
+  cart.goToStepCount(250);
+  camera.goToStepCount(-237);
+  takePhoto();
+/*
+  //plateform level 5
+  plateform.goToStepCount(132342);
+  cart.goToStepCount(250);
+  camera.goToStepCount(237);
+  takePhoto();
+
+  cart.goToStepCount(3315);
+  camera.goToStepCount(204);
+  takePhoto();
+
+  
+  cart.goToStepCount(7973);
+  camera.goToStepCount(204);
+  takePhoto();
+
+  cart.goToStepCount(11154);
+  camera.goToStepCount(174);
+  takePhoto();
+
+  */
+
+  Serial.println("Photoshoot complete");
+
+  //plateform.goToStepCount(0);
+  //cart.goToStepCount(0);
+  //camera.goToStepCount(0);
+}
 //-------------------------takePhoto----------------------------------------------
 void takePhoto(){
-  digitalWrite(35,HIGH);//trigger pin
+  digitalWrite(37,HIGH);//trigger pin
   delay(500);
-  digitalWrite(35,LOW);
-  Serial.print("capturing photo...    ");
-  /*
-  while(digitalRead(34)==LOW){ //confirmation pin
-    Serial.print(".");
-    delay(200);
-  }
-  */
-  delay(200);
+  digitalWrite(37,LOW);
+  Serial.print("capturing photo");
+  //while(digitalRead(36)==LOW){ //confirmation pin
+    //Serial.print(".");
+    //delay(200);
+  //}
+  
+  delay(2000);
   Serial.println("done");
-  delay(500);
+  //delay(500);
 }
 
 void printSerialCommands() {
@@ -324,24 +391,3 @@ void printSerialCommands() {
 
   Serial.println("    'c' captures a photo'");
 }
-
-//pH
-String takepHReading() {                                 //if the hardware serial port_3 receives a char
-    String inputstring = "";                              //a string to hold incoming data from the PC
-    String sensorstring = "";                             //a string to hold the data from the Atlas Scientific product
-    sensorstring.reserve(30);                           //set aside some bytes for receiving data from Atlas Scientific product
-    boolean input_string_complete = false;                //have we received all the data from the PC
-    boolean sensor_string_complete = false;               //have we received all the data from the Atlas Scientific product
-    float pH;                                             //used to hold a floating point number that is the pH
-    sensorstring = Serial3.readStringUntil(13);         //read the string until we see a <CR>
-    return sensorstring;
-    sensor_string_complete = true;                      //set the flag used to tell if we have received a completed string from the PC
-}
-
-/*
-//EC
-void serialEvent3() {                                 //if the hardware serial port_3 receives a char
-  sensorstring = Serial3.readStringUntil(13);         //read the string until we see a <CR>
-  sensor_string_complete = true;                      //set the flag used to tell if we have received a completed string from the PC
-}
-*/
