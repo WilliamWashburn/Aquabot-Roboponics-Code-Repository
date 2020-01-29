@@ -23,7 +23,7 @@ int hourLightsOff = 1; //this is 24 hour time
 int minuteLightsOff = 0;
 
 
-Stepper plateform(11,10,12,800,50); //(PUL,DIR,ENA,delaytime,pulsewidth)
+Stepper plateform(11,10,12,500,50); //(PUL,DIR,ENA,delaytime,pulsewidth)
 Stepper cart(6,5,7,2000,50);
 Stepper camera(3,2,4,10000,50);
 
@@ -258,7 +258,7 @@ void takePhoto(){
   Serial.print("capturing photo...    ");
   while(digitalRead(34)==LOW){ //confirmation pin
     Serial.print(".");
-    delay(200);
+    delay(100);
   }
   Serial.println("done");
   delay(500);
