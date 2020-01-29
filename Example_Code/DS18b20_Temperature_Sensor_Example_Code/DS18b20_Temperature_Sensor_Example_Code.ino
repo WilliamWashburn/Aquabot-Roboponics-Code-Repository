@@ -2,7 +2,7 @@
 #include <DallasTemperature.h>
 
 // Assign to pin 10 of your Arduino to the DS18B20
-#define ONE_WIRE_BUS 7
+#define ONE_WIRE_BUS 8
 
 // Create a onewire instanace
 OneWire oneWire(ONE_WIRE_BUS);
@@ -21,7 +21,7 @@ void setup(void)
 void loop(void)
 { 
   sensors.requestTemperatures(); // Tell the DS18B20 to get make a measurement
-  Serial.println(sensors.getTempCByIndex(0),4); // Get that temperature and print it.
+  Serial.println(sensors.getTempFByIndex(0),4); // Get that temperature and print it.
   Serial.println(); 
   delay(1000); 
 }

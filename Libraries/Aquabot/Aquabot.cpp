@@ -257,8 +257,89 @@ void Camera::takePicture()
 //}
 
 //{ Wifi Class
+Wifi::Wifi()
+{
+	Serial2.begin(115200);
+	
+	int _countTrueCommand;
+	int _countTimeCommand;
+	bool _found = false;
+	
+	
+}
+
+void Wifi::connectToAP(String AP,String PASS){
+	sendCommand("AT",5,"OK");
+	sendCommand("AT+CWMODE=1",5,"OK");
+	sendCommand("AT+CWJAP=\""+ AP +"\",\""+ PASS +"\"",20,"OK");
+
+	_AP = AP;
+	_PASS = PASS;
+	Serial.println("wifi setup complete"); Serial.println();
+}
+
+void Wifi::connectToThingSpeak(String API, String HOST, String PORT){
+	_API = API;
+	_HOST = HOST;
+	_PORT = PORT;
+	
+	Serial.println(_API);
+	Serial.println(_HOST);
+	Serial.println(_PORT);
+
+
+}
+
+void Wifi::uploadToThingSpeak(double sensorValue, String field)
+{
+	//This (below) will help understand the AT Commands, use a serial monitor to send commands directly to ESP8266
+	//https://room-15.github.io/blog/2015/03/26/esp8266-at-command-reference/#AT+CIPSEND
+	String getData = "GET /update?api_key="+ _API +"&"+ field +"="+String(sensorValue);
+	sendCommand("AT+CIPMUX=1",5,"OK"); //enables multiple connections (MAX 4)
+	sendCommand("AT+CIPSTART=0,\"TCP\",\""+ _HOST +"\","+ _PORT,20,"OK"); //connects to the ThingSpeak server
+	sendCommand("AT+CIPSEND=0," +String(getData.length()+4),4,">"); //sends length of data to be sent
+	Serial2.println(getData);delay(1500);_countTrueCommand++; //this actually sends the data
+	sendCommand("AT+CIPCLOSE=0",5,"OK"); //closes connection
+}
+
+void Wifi::sendCommand(String command, int maxTime, char readReplay[])
+{
+	
+	Serial.print(_countTrueCommand);
+	Serial.print(". at command => ");
+	Serial.print(command);
+	Serial.print(" ");
+	while(_countTimeCommand < (maxTime*1))
+	{
+		Serial2.println(command);//at+cipsend
+		if(Serial2.find(readReplay))//ok
+		{
+			_found = true;
+			break;
+		}
+
+		_countTimeCommand++;
+	}
+
+	if(_found == true)
+	{
+		Serial.println("OYI");
+		_countTrueCommand++;
+		_countTimeCommand = 0;
+	}
+
+	if(_found == false)
+	{
+		Serial.println("Fail");
+		_countTrueCommand = 0;
+		_countTimeCommand = 0;
+	}
+
+	_found = false;
+}
 
 //}
+
 
 //{ Sensor Class
 

@@ -286,6 +286,8 @@ float getECData(float temperature, int EC_PIN) {
     ec.calibration(voltage,temperature);          // calibration process by Serail CMD
 	return ecValue;
 }
+
+//----------------sendCommand-----------------------------------------------------------
 void sendCommand(String command, int maxTime, char readReplay[]) {
 	
 	//Serial.print(countTrueCommand);
@@ -320,6 +322,9 @@ void sendCommand(String command, int maxTime, char readReplay[]) {
 
 	found = false;
 }
+
+//----------------uploadToThingSpeak-----------------------------------------------------------
+
 bool uploadToThingSpeak(int sensorValue, String field, String API, String HOST) {
 	//This (below) will help understand the AT Commands, use a serial monitor to send commands directly to ESP8266
 	//https://room-15.github.io/blog/2015/03/26/esp8266-at-command-reference/#AT+CIPSEND
@@ -331,6 +336,8 @@ bool uploadToThingSpeak(int sensorValue, String field, String API, String HOST) 
 	Serial2.println(getData);delay(1500);countTrueCommand++; //this actually sends the data
 	sendCommand("AT+CIPCLOSE=0",5,"OK"); //closes connection
 }
+
+//----------------handleSerial-----------------------------------------------------------
 
 void handleSerial() {
   while (Serial.available() > 0) {
