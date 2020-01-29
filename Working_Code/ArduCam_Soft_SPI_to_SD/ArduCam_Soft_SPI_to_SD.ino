@@ -1,3 +1,4 @@
+//Note from Will Washburn:
 //This was adapted from the 4CAM example file. Now it just takes a picture when a pin is triggered and confirms a capture over another pin.
 
 // ArduCAM Mini demo (C)2017 Lee
@@ -143,7 +144,6 @@ void loop() {
     myCAMSaveToSDFile(myCAM1);
   delay(5000);
   */
-
   if(digitalRead(9) == HIGH) {
     digitalWrite(A0,HIGH);delay(50);digitalWrite(A0,LOW); //flash LED once to confirm request
     if(CAM1_EXIST) {
@@ -156,7 +156,7 @@ void loop() {
   }
 
   //if digital pin high -> take picture
-  //is capture is sucessful -> blink an LED
+  //is capture is sucessful -> blink an LED and pull confirmation line HIGH
 }
 
 //}
@@ -164,6 +164,7 @@ void loop() {
 //{------------------------------------myCAMSaveToSDFile---------------------------------------------
 void myCAMSaveToSDFile(ArduCAM myCAM){
 char str[8];
+char str2[8];
 byte buf[256];
 static int i = 0;
 static int k = 0;
@@ -194,11 +195,21 @@ if (length == 0 ) //0 kb
   return ;
 }
 //Construct a file name
+static int count = 1; //count of photoshoot
+static int N = 20 ; //number of plants
+
+if (k = N+1) {
+  k = 0;
+  count = count + 1;
+}
 k = k + 1;
 itoa(k, str, 10);
-strcat(str, ".jpg");
+itoa(count, str2, 10);
+strcat(str2,"_");
+strcat(str2,str);
+strcat(str2, ".jpg");
 //Open the new file
-outFile.open(str, O_WRITE | O_CREAT | O_TRUNC);
+outFile.open(str2, O_WRITE | O_CREAT | O_TRUNC);
 /*
 if(!outFile){
   Serial.println(F("File open faild"));
