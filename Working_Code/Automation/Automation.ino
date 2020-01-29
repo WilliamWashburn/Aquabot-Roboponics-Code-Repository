@@ -245,10 +245,10 @@ void photoshoot(){
   growLights.lightsOn();
   plateform.enable();cart.enable();camera.enable();
   Serial.println("Motors enabled");
+
   
-  /*
 //plateform level 1
-  plateform.goToStepCount(9289);
+  //plateform.goToStepCount(9289);
   cart.goToStepCount(250);
   camera.goToStepCount(237);
   takePhoto();
@@ -265,7 +265,7 @@ void photoshoot(){
   cart.goToStepCount(11154);
   camera.goToStepCount(174);
   takePhoto();
-  
+  /*
 //plateform level 2
   plateform.goToStepCount(41899);
   cart.goToStepCount(11154);
@@ -305,6 +305,7 @@ void photoshoot(){
   camera.goToStepCount(174);
   takePhoto();
 */
+/*
   //plateform level 4
   plateform.goToStepCount(102505);
   cart.goToStepCount(11154);
@@ -322,6 +323,7 @@ void photoshoot(){
   cart.goToStepCount(250);
   camera.goToStepCount(-237);
   takePhoto();
+  */
 /*
   //plateform level 5
   plateform.goToStepCount(132342);
@@ -349,6 +351,7 @@ void photoshoot(){
   //plateform.goToStepCount(0);
   //cart.goToStepCount(0);
   //camera.goToStepCount(0);
+
 }
 //-------------------------takePhoto----------------------------------------------
 void takePhoto(){
@@ -356,14 +359,19 @@ void takePhoto(){
   delay(500);
   digitalWrite(37,LOW);
   Serial.print("capturing photo");
-  //while(digitalRead(36)==LOW){ //confirmation pin
-    //Serial.print(".");
-    //delay(200);
-  //}
-  
-  delay(2000);
+  int count = 0;
+  while(digitalRead(36)==LOW){ //confirmation pin
+    Serial.print(".");
+    delay(200);
+    count++;
+    if (count == 100){
+      digitalWrite(37,HIGH);//trigger pin
+      delay(1000);
+      digitalWrite(37,LOW);
+      count = 0;
+    }
+  }
   Serial.println("done");
-  //delay(500);
 }
 
 void printSerialCommands() {
