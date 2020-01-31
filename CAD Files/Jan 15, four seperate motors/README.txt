@@ -1,0 +1,1 @@
+The MotorGear's bore for the 5mm motor shaft needs to be adjusted to fit better. The current print with start slipping.
