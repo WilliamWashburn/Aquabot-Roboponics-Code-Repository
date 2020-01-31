@@ -73,6 +73,49 @@ void setup() {
 }
 
 void loop() {
+  /*
+   * Current thinking of logic:
+   * Starting at a specified position (x,y), if a button (up, down, left, or right), the cart will move in that direction.
+   * The speed it moves will be based off of the speed of the main set of cables (the left and right for horizontal and the up and down for vertical)
+   * A step of the main pairs will occur one per time interval (whatever delay between pulse seems to give smoothest operation)
+   * Since the number of steps the secondary pair will take will be less than 1, a value is needed to count the partial steps, once this value reached above 1, a step will be taken and the value will decrease by one
+   * 
+   * Needs:
+   * speed variable
+   * position variables
+   * secondary cable partial step count
+   * 
+   * Pseudo Code:
+   * if (left button pressed) {
+   *   moveCartLeft()
+   * }
+   * 
+   * void moveCartLeft() {
+   *   setDirleft(HIGH);setDirright(LOW); //set the direction of the primary motors to whatever would move the cart the correct direction
+   *   stepMotor(left);stepMotor(right); //step the primary cables once
+   *   nbrOfSteps = calcSecondaryStep(x,y,dir) //calculate the cooresponding nbr of steps the secondary need to take, the direction the cart is moving with impact if the number is negative of positive
+   *   stepCountHor = stepCountHor + nbrOfSteps //add the nbr of steps to the step count, this should be a global variable
+   *   
+   *   //stepCountHor will be positive if needs to move slightly out (loosen) and negative if needs to move slightly in (tighened)
+   *   
+   *   if (stepCountHor > 1) {
+   *     setDir(left, HIGH);setDir(right,HIGH); //set direction that would tighten the cables
+   *   ``stepMotor(up);stepMotor(down); //step both motors
+   *     stepCountHor = stepCountHor - 1;
+   *   }
+   *   
+   *   if (stepCountHor < 1) {
+   *     setDir(left, LOW);setDir(right,LOW); //set direction that would tighten the cables
+   *   ``stepMotor(up);stepMotor(down); //step both motors
+   *     stepCountHor = stepCountHor + 1;
+   *   }
+   * }
+   * 
+   * void setDir(int motor, bool dir) {
+   *    
+   * }
+   * 
+   */
   
   if (digitalRead(buttonLeft) == LOW) {
     Serial.println("left button pressed");
