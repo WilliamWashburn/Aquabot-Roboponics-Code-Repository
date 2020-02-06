@@ -103,16 +103,27 @@ void loop() {
      secondary cable partial step count
 
      Pseudo Code:
+
+    if (buttonLeftState == LOW) {
+      moveCartLeft()
+    }
+
+    if (buttonRightState == LOW) {
+      moveCartRight()
+    }
+
+    if (buttonUpState == LOW) {
+      moveCartUp()
+    }
+
+    if (buttonDownState == LOW) {
+      moveCartDown()
+    }
   */
-
-  if (buttonLeftState == LOW) {
-    moveCartLeft()
-  }
-
   void moveCartLeft() {
     setDir(DIR_left, HIGH); setDir(DIR_right, LOW);                             //set the direction of the primary motors to whatever would move the cart the correct direction
     stepMotor(PUL_left, motordelay); stepMotor(PUL_right, motordelay);          //step the primary cables once
-    nbrOfSteps = calcSecondaryStep(x, y, dir);                                  //calculate the cooresponding nbr of steps the secondary need to take, the direction the cart is moving with impact if the number is negative of positive
+    nbrOfSteps = calcSecondaryStep(x, y, 3);                                    //calculate the cooresponding nbr of steps the secondary need to take, the direction the cart is moving with impact if the number is negative of positive
     stepCountVer = stepCountVer + nbrOfSteps;                                   //add the nbr of steps to the step count, this should be a global variable
 
     //stepCountVer will be positive if needs to move slightly out (loosen) and negative if needs to move slightly in (tightened)
@@ -121,39 +132,76 @@ void loop() {
       setDir(DIR_up, HIGH); setDir(DIR_down, HIGH); //set direction that would tighten the cables
       stepMotor(PUL_up, motordelay); stepMotor(PUL_down, motordelay); //step both motors
       stepCountVer = stepCountVer - 1;
-
-      if (stepCountVer < -1) {
-        setDir(DIR_up, LOW); setDir(DIR_down, LOW);
-        stepMotor(PUL_up, motordelay); stepMotor(PUL_down, motordelay);
-        stepCountHor = stepCountHor + 1;
-      }
     }
-
-    void moveCartRight() {
-      setDir(DIR_left, LOW); setDir(DIR_right, HIGH);
-      stepMotor(PUL_left, motordelay); stepMotor(PUL_right, motordelay);
-      nbrOfSteps = calcSecondaryStep(x, y, dir);
-      stepCountVer = stepCountVer + nbrOfSteps;
-
-      if (stepCountVer > 1) {
-        setDir(DIR_up, HIGH); setDir(DIR_down, HIGH);
-        stepMotor(PUL_up, motordelay); stepMotor(PUL_down, motordelay);
-        stepCountVer = stepCountVer - 1;
-      }
-
-      if (stepCountHor < -1) {
+      if (stepCountVer < -1) {
         setDir(DIR_up, LOW); setDir(DIR_down, LOW);
         stepMotor(PUL_up, motordelay); stepMotor(PUL_down, motordelay);
         stepCountVer = stepCountVer + 1;
       }
     }
 
-    void setDir(int motor, bool dir) {
-      digitalWrite(motor, dir);
-    }
-}
+  void moveCartRight() {
+    setDir(DIR_left, LOW); setDir(DIR_right, HIGH);
+    stepMotor(PUL_left, motordelay); stepMotor(PUL_right, motordelay);
+    nbrOfSteps = calcSecondaryStep(x, y, 4);
+    stepCountVer = stepCountVer + nbrOfSteps;
 
-int delaytime = setDelay();
+    if (stepCountVer > 1) {
+      setDir(DIR_up, HIGH); setDir(DIR_down, HIGH);
+      stepMotor(PUL_up, motordelay); stepMotor(PUL_down, motordelay);
+      stepCountVer = stepCountVer - 1;
+    }
+
+    if (stepCountVer < -1) {
+      setDir(DIR_up, LOW); setDir(DIR_down, LOW);
+      stepMotor(PUL_up, motordelay); stepMotor(PUL_down, motordelay);
+      stepCountVer = stepCountVer + 1;
+    }
+  }
+
+  void moveCartUp() {
+    setDir(DIR_up, HIGH); setDir(DIR_down, LOW);
+    stepMotor(PUL_up, motordelay); stepMotor(PUL_down, motordelay);
+    nbrOfSteps = calcSecondaryStep(x, y, 1);
+    stepCountHor = stepCountHor + nbrOfSteps;
+
+    if (stepCountHor > 1) {
+      setDir(DIR_left, HIGH); setDir(DIR_right, HIGH);
+      stepMotor(PUL_left, motordelay); stepMotor(PUL_right, motordelay);
+      stepCountHor = stepCountHor - 1;
+    }
+
+    if (stepCountHor < -1) {
+      setDir(DIR_left, LOW); setDir(DIR_right, LOW);
+      stepMotor(PUL_left, motordelay); stepMotor(PUL_right, motordelay);
+      stepCountHor = stepCountHor + 1;
+    }
+  }
+
+  void moveCartDown() {
+    setDir(DIR_up, LOW); setDir(DIR_down, HIGH);
+    stepMotor(PUL_up, motordelay); stepMotor(PUL_down, motordelay);
+    nbrOfSteps = calcSecondaryStep(x, y, 2);
+    stepCountHor = stepCountHor + nbrOfSteps;
+
+    if (stepCountHor > 1) {
+      setDir(DIR_left, HIGH); setDir(DIR_right, HIGH);
+      stepMotor(PUL_left, motordelay); stepMotor(PUL_right, motordelay);
+      stepCountHor = stepCountHor - 1;
+    }
+
+    if (stepCountHor < -1) {
+      setDir(DIR_left, LOW); setDir(DIR_right, LOW);
+      stepMotor(PUL_left, motordelay); stepMotor(PUL_right, motordelay);
+      stepCountHor = stepCountHor + 1;
+    }
+  }
+
+  void setDir(int motor, bool dir) {
+    digitalWrite(motor, dir);
+  }
+
+  int delaytime = setDelay();
   buttonLeftState = digitalRead(buttonLeft);
   buttonRightState = digitalRead(buttonRight);
   buttonUpState = digitalRead(buttonUp);
