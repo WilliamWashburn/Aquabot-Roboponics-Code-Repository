@@ -26,6 +26,12 @@ int ENA_down = 2;
 int DIR_down = 3;
 int PUL_down = 4;
 
+int motordelay = 500; //this is the desired motor delay. If multiple motors are running, the time will be "cut" so that each motor is still experiencing this delay
+
+bool buttonLeftState;
+bool buttonRightState;
+bool buttonUpState;
+bool buttonDownState;
 
 void setup() {
   // put your setup code here, to run once:
@@ -116,38 +122,43 @@ void loop() {
    * }
    * 
    */
+ 
+  int delaytime = setDelay();
+  buttonLeftState = digitalRead(buttonLeft);
+  buttonRightState = digitalRead(buttonRight);
+  buttonUpState = digitalRead(buttonUp);
+  buttonDownState = digitalRead(buttonDown);
   
-  if (digitalRead(buttonLeft) == LOW) {
-    Serial.println("left button pressed");
-       
-    digitalWrite(PUL_left,LOW);
-    delayMicroseconds(500);
-    digitalWrite(PUL_left,HIGH);
-    delayMicroseconds(500);
-  }
-
-  if (digitalRead(buttonRight) == LOW) {
-    Serial.println("right button pressed");
+  if ( buttonLeftState == LOW) {
+    //Serial.println("left button pressed");
     
-    digitalWrite(PUL_right,LOW);
-    delayMicroseconds(500);
-    digitalWrite(PUL_right,HIGH);
-    delayMicroseconds(500);
+    digitalWrite(PUL_left,LOW);
+    delayMicroseconds(delaytime);
+    digitalWrite(PUL_left,HIGH);
+    delayMicroseconds(delaytime);
   }
 
-  if (digitalRead(buttonUp) == LOW) {
-    Serial.println("up button pressed");
+  if (buttonRightState == LOW) {
+
+    digitalWrite(PUL_right,LOW);
+    delayMicroseconds(delaytime);
+    digitalWrite(PUL_right,HIGH);
+    delayMicroseconds(delaytime);
+  }
+
+  if (buttonUpState == LOW) {
+    //Serial.println("up button pressed");
 
     digitalWrite(PUL_up,LOW);
-    delayMicroseconds(500);
+    delayMicroseconds(delaytime);
     digitalWrite(PUL_up,HIGH);
-    delayMicroseconds(500);
+    delayMicroseconds(delaytime);
   }
 
-  if (digitalRead(buttonDown) == LOW) {
-    Serial.println("down button pressed");
+  if (buttonDownState == LOW) {
+    //Serial.println("down button pressed");
 
-    stepMotor(PUL_down,500);
+    stepMotor(PUL_down,delaytime);
   }
 }
 
@@ -157,4 +168,24 @@ void stepMotor(int PUL, int delayTime){
   delayMicroseconds(delayTime);
   digitalWrite(PUL,HIGH);
   delayMicroseconds(delayTime);
+}
+
+int setDelay(){
+  int count = 0; //nbr of motors with button pressed
+  int delayTime;
+  if (buttonLeftState == LOW){count = count + 1;}
+  if (buttonRightState == LOW){count = count +1;}
+  if (buttonUpState == LOW){count = count +1;}
+  if (buttonDownState== LOW){count = count +1;}
+
+  if (count!=0) {
+    delayTime = motordelay/count;
+    Serial.println(count);
+  }
+
+  else {
+    delayTime=motordelay; //no motor is moving so it doesnt matter, just avoiding dividing by zero
+  }
+
+  return delayTime;
 }
