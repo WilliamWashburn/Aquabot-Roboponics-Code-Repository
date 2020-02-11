@@ -28,7 +28,7 @@ int ENA_down = 2;
 int DIR_down = 3;
 int PUL_down = 4;
 
-int motordelay = 500; //this is the desired motor delay. If multiple motors are running, the time will be "cut" so that each motor is still experiencing this delay
+int motordelay = 500; //this is the desired motor delay. If multiple motors are running, the time will be "cut" so that each motor seems to be still experiencing this delay
 
 bool buttonLeftState;
 bool buttonRightState;
@@ -79,51 +79,16 @@ void setup() {
   digitalWrite(ENA_up, LOW);
   digitalWrite(ENA_down, LOW);
 
-  /*
-    //setting motor direction
-    digitalWrite(DIR_left,HIGH);
-    digitalWrite(DIR_right,HIGH);
-    digitalWrite(DIR_up,HIGH);
-    digitalWrite(DIR_down,HIGH);
-  */
-
 
   Serial.println("Setup Complete");
   Serial.println("Beginning loop, press a button to move that motor");
 }
 
 void loop() {
-  /*
-     Current thinking of logic:
-     Starting at a specified position (x,y), if a button (up, down, left, or right), the cart will move in that direction.
-     The speed it moves will be based off of the speed of the main set of cables (the left and right for horizontal and the up and down for vertical)
-     A step of the main pairs will occur one per time interval (whatever delay between pulse seems to give smoothest operation)
-     Since the number of steps the secondary pair will take will be less than 1, a value is needed to count the partial steps, once this value reached above 1, a step will be taken and the value will decrease by one
-
-     Needs:
-     speed variable
-     position variables
-     secondary cable partial step count
-
-     Pseudo Code:
-
-    if (buttonLeftState == LOW) {
-      moveCartLeft()
-    }
-
-    if (buttonRightState == LOW) {
-      moveCartRight()
-    }
-
-    if (buttonUpState == LOW) {
-      moveCartUp()
-    }
-
-    if (buttonDownState == LOW) {
-      moveCartDown()
-    }
-  */
+  
   int delaytime = setDelay();
+
+  //read button states
   buttonLeftState = digitalRead(buttonLeft);
   buttonRightState = digitalRead(buttonRight);
   buttonUpState = digitalRead(buttonUp);
