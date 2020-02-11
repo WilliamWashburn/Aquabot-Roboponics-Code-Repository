@@ -41,11 +41,11 @@ int dia = 2;        //Gear diameter in inches
 int B = 70;     //Base workspace dimension in inches
 int H = 60;   //Height workspace dimension in inches
 
-double x = 0;             //Current x-position
-double y = 0;             //Current y-position
+double curX = 35;             //Current x-position
+double curY = 30;             //Current y-position
 double stepCountHor = 0;  //Horizontal step counter
 double stepCountVer = 0;  //Vertical step counter
-double nbrOfSteps =0;    //Step Counter
+double nbrOfSteps = 0;   //Step Counter
 
 void setup() {
   // put your setup code here, to run once:
@@ -93,42 +93,33 @@ void setup() {
 }
 
 void loop() {
-  /*
-     Current thinking of logic:
-     Starting at a specified position (x,y), if a button (up, down, left, or right), the cart will move in that direction.
-     The speed it moves will be based off of the speed of the main set of cables (the left and right for horizontal and the up and down for vertical)
-     A step of the main pairs will occur one per time interval (whatever delay between pulse seems to give smoothest operation)
-     Since the number of steps the secondary pair will take will be less than 1, a value is needed to count the partial steps, once this value reached above 1, a step will be taken and the value will decrease by one
-
-     Needs:
-     speed variable
-     position variables
-     secondary cable partial step count
-
-     Pseudo Code:
-
-    if (buttonLeftState == LOW) {
-      moveCartLeft()
-    }
-
-    if (buttonRightState == LOW) {
-      moveCartRight()
-    }
-
-    if (buttonUpState == LOW) {
-      moveCartUp()
-    }
-
-    if (buttonDownState == LOW) {
-      moveCartDown()
-    }
-  */
+  
   int delaytime = setDelay();
   buttonLeftState = digitalRead(buttonLeft);
   buttonRightState = digitalRead(buttonRight);
   buttonUpState = digitalRead(buttonUp);
   buttonDownState = digitalRead(buttonDown);
 
+  if (buttonLeftState == LOW) {
+    Serial.println("Button Pressed: Left");
+    moveCartLeft();
+  }
+
+  if (buttonRightState == LOW) {
+    Serial.println("Button Pressed: RIght");
+    moveCartRight();
+  }
+
+  if (buttonUpState == LOW) {
+    Serial.println("Button Pressed: Up");
+    moveCartUp();
+  }
+
+  if (buttonDownState == LOW) {
+    Serial.println("Button Pressed: Down");
+    moveCartDown();
+  }
+  
   /*if (buttonLeftState == LOW) {
     //Serial.println("left button pressed");
 
@@ -164,10 +155,12 @@ void loop() {
 }
 
 void moveCartLeft() {
-  setDir(DIR_left, HIGH); setDir(DIR_right, LOW);                             //set the direction of the primary motors to whatever would move the cart the correct direction
+  setDir(DIR_left, LOW); setDir(DIR_right, HIGH);                             //set the direction of the primary motors to whatever would move the cart the correct direction
   stepMotor(PUL_left, motordelay); stepMotor(PUL_right, motordelay);          //step the primary cables once
-  nbrOfSteps = calcSecondaryStep(x, y, 3);                                    //calculate the cooresponding nbr of steps the secondary need to take, the direction the cart is moving with impact if the number is negative of positive
+  nbrOfSteps = calcSecondaryStep(3);                                    //calculate the cooresponding nbr of steps the secondary need to take, the direction the cart is moving with impact if the number is negative of positive
   stepCountVer = stepCountVer + nbrOfSteps;                                   //add the nbr of steps to the step count, this should be a global variable
+  Serial.println(nbrOfSteps);
+  Serial.println(stepCountVer);
 
   //stepCountVer will be positive if needs to move slightly out (loosen) and negative if needs to move slightly in (tightened)
 
@@ -184,10 +177,12 @@ void moveCartLeft() {
 }
 
 void moveCartRight() {
-  setDir(DIR_left, LOW); setDir(DIR_right, HIGH);
+  setDir(DIR_left, HIGH); setDir(DIR_right, LOW);
   stepMotor(PUL_left, motordelay); stepMotor(PUL_right, motordelay);
-  nbrOfSteps = calcSecondaryStep(x, y, 4);
+  nbrOfSteps = calcSecondaryStep(4);
   stepCountVer = stepCountVer + nbrOfSteps;
+  Serial.println(nbrOfSteps);
+  Serial.println(stepCountVer);  
 
   if (stepCountVer > 1) {
     setDir(DIR_up, HIGH); setDir(DIR_down, HIGH);
@@ -203,10 +198,12 @@ void moveCartRight() {
 }
 
 void moveCartUp() {
-  setDir(DIR_up, HIGH); setDir(DIR_down, LOW);
+  setDir(DIR_up, LOW); setDir(DIR_down, HIGH);
   stepMotor(PUL_up, motordelay); stepMotor(PUL_down, motordelay);
-  nbrOfSteps = calcSecondaryStep(x, y, 1);
+  nbrOfSteps = calcSecondaryStep(1);
   stepCountHor = stepCountHor + nbrOfSteps;
+  Serial.println(nbrOfSteps);
+  Serial.println(stepCountHor);
 
   if (stepCountHor > 1) {
     setDir(DIR_left, HIGH); setDir(DIR_right, HIGH);
@@ -222,10 +219,12 @@ void moveCartUp() {
 }
 
 void moveCartDown() {
-  setDir(DIR_up, LOW); setDir(DIR_down, HIGH);
+  setDir(DIR_up, HIGH); setDir(DIR_down, LOW);
   stepMotor(PUL_up, motordelay); stepMotor(PUL_down, motordelay);
-  nbrOfSteps = calcSecondaryStep(x, y, 2);
+  nbrOfSteps = calcSecondaryStep(2);
   stepCountHor = stepCountHor + nbrOfSteps;
+  Serial.println(nbrOfSteps);
+  Serial.println(stepCountHor);
 
   if (stepCountHor > 1) {
     setDir(DIR_left, HIGH); setDir(DIR_right, HIGH);
@@ -240,7 +239,7 @@ void moveCartDown() {
   }
 }
 
-void setDir(int motor, bool dir) {
+void setDir(int motor, int dir) {
   digitalWrite(motor, dir);
 }
 
@@ -270,7 +269,6 @@ int setDelay() {
 
   if (count != 0) {
     delayTime = motordelay / count;
-    Serial.println(count);
   }
 
   else {
@@ -281,29 +279,31 @@ int setDelay() {
 }
 
 //delta returns the change of length in the top cable over the change in length of the horizontal cable
-double delta(double x, double y) {
-  double dx = (dia * PI) / (200 * mc); double dy = dx;
-  double lACD = sqrt(pow(x, 2) + pow(H - y, 2)) + sqrt(pow(B - x, 2) + pow(H - y, 2)) - sqrt(pow(x + dx, 2) + pow(H - y - dy, 2)) - sqrt(pow(B - x - dx, 2) + pow(H - y - dy, 2));
-  double lBCD = sqrt(pow(x, 2) + pow(y, 2)) + sqrt(pow(x, 2) + pow(H - y, 2)) - sqrt(pow(x + dx, 2) + pow(y + dy, 2)) - sqrt(pow(x + dx, 2) + pow(H - y - dy, 2));
-  double del = lACD / lBCD;
+double delta(double dx, double dy) {
+  double delx = (dia * PI * dx) / (200 * mc); double dely = (dia * PI * dy) / (200 * mc);
+  double lACD = sqrt(pow(curX, 2) + pow(H - curY, 2)) + sqrt(pow(B - curX, 2) + pow(H - curY, 2)) - sqrt(pow(curX + delx, 2) + pow(H - curY - dely, 2)) - sqrt(pow(B - curX - delx, 2) + pow(H - curY - dely, 2));
+  double lBCD = sqrt(pow(curX, 2) + pow(curY, 2)) + sqrt(pow(curX, 2) + pow(H - curY, 2)) - sqrt(pow(curX + delx, 2) + pow(curY + dely, 2)) - sqrt(pow(curX + delx, 2) + pow(H - curY - dely, 2));
+  double del = (lACD / lBCD) * ((200 * mc) / (dia * PI));
+  curX = curX + delx; curY = curY + dely;
+  Serial.println(curX); Serial.println(curY);
   return del;
 }
 
 //Calculates the number of secondary steps that need to be taken.
 //Dir: 1 is up, 2 is down, 3 is left, 4 is right
-double calcSecondaryStep(double x, double y, int dir) {
+double calcSecondaryStep(int dir) {
   switch (dir) {
     case 1:
-      return 1 / delta(x, y);
+      return 1 / delta(0, 1);
       break;
     case 2:
-      return 1 / delta(x, y);
+      return 1 / delta(0, -1);
       break;
     case 3:
-      return delta(x, y);
+      return delta(-1, 0);
       break;
     case 4:
-      return delta(x, y);
+      return delta(1, 0);
       break;
   }
 }
