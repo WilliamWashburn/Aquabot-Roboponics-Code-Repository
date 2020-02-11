@@ -93,39 +93,6 @@ void loop() {
   buttonRightState = digitalRead(buttonRight);
   buttonUpState = digitalRead(buttonUp);
   buttonDownState = digitalRead(buttonDown);
-
-  /*if (buttonLeftState == LOW) {
-    //Serial.println("left button pressed");
-
-    digitalWrite(PUL_left, LOW);
-    delayMicroseconds(delaytime);
-    digitalWrite(PUL_left, HIGH);
-    delayMicroseconds(delaytime);
-    }
-
-    if (buttonRightState == LOW) {
-
-    digitalWrite(PUL_right, LOW);
-    delayMicroseconds(delaytime);
-    digitalWrite(PUL_right, HIGH);
-    delayMicroseconds(delaytime);
-    }
-
-    if (buttonUpState == LOW) {
-    //Serial.println("up button pressed");
-
-    digitalWrite(PUL_up, LOW);
-    delayMicroseconds(delaytime);
-    digitalWrite(PUL_up, HIGH);
-    delayMicroseconds(delaytime);
-    }
-
-    if (buttonDownState == LOW) {
-    //Serial.println("down button pressed");
-
-    stepMotor(PUL_down, delaytime);
-    }
-  */
 }
 
 void moveCartLeft() {
