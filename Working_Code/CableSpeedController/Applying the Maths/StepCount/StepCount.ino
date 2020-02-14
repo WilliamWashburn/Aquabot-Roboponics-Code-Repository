@@ -36,7 +36,7 @@ bool buttonUpState;
 bool buttonDownState;
 
 //Global Variables
-int mc = 32;        //Microstep setting
+int mc = 1;        //Microstep setting
 int dia = 2;        //Gear diameter in inches
 int B = 70;     //Base workspace dimension in inches
 int H = 60;   //Height workspace dimension in inches
@@ -100,7 +100,7 @@ void loop() {
   }
 
   if (buttonRightState == LOW) {
-    Serial.println("Button Pressed: RIght");
+    Serial.println("Button Pressed: Right");
     moveCartRight();
   }
 
@@ -273,11 +273,21 @@ int setDelay() {
 }
 
 //delta returns the change of length in the top cable over the change in length of the horizontal cable
-double delta(double dx, double dy) {
+double deltaH(double dx, double dy) {
   double delx = (dia * PI * dx) / (200 * mc); double dely = (dia * PI * dy) / (200 * mc);
   double lACD = sqrt(pow(curX, 2) + pow(H - curY, 2)) + sqrt(pow(B - curX, 2) + pow(H - curY, 2)) - sqrt(pow(curX + delx, 2) + pow(H - curY - dely, 2)) - sqrt(pow(B - curX - delx, 2) + pow(H - curY - dely, 2));
   double lBCD = sqrt(pow(curX, 2) + pow(curY, 2)) + sqrt(pow(curX, 2) + pow(H - curY, 2)) - sqrt(pow(curX + delx, 2) + pow(curY + dely, 2)) - sqrt(pow(curX + delx, 2) + pow(H - curY - dely, 2));
   double del = (lACD) * ((200 * mc) / (dia * PI));
+  curX = curX + delx; curY = curY + dely;
+  Serial.println(curX); Serial.println(curY);
+  return del;
+}
+
+double deltaV(double dx, double dy) {
+  double delx = (dia * PI * dx) / (200 * mc); double dely = (dia * PI * dy) / (200 * mc);
+  double lACD = sqrt(pow(curX, 2) + pow(H - curY, 2)) + sqrt(pow(B - curX, 2) + pow(H - curY, 2)) - sqrt(pow(curX + delx, 2) + pow(H - curY - dely, 2)) - sqrt(pow(B - curX - delx, 2) + pow(H - curY - dely, 2));
+  double lBCD = sqrt(pow(curX, 2) + pow(curY, 2)) + sqrt(pow(curX, 2) + pow(H - curY, 2)) - sqrt(pow(curX + delx, 2) + pow(curY + dely, 2)) - sqrt(pow(curX + delx, 2) + pow(H - curY - dely, 2));
+  double del = (lBCD) * ((200 * mc) / (dia * PI));
   curX = curX + delx; curY = curY + dely;
   Serial.println(curX); Serial.println(curY);
   return del;
@@ -288,16 +298,16 @@ double delta(double dx, double dy) {
 double calcSecondaryStep(int dir) {
   switch (dir) {
     case 1:
-      return 1 / delta(0, 1);
+      return deltaV(0, 1);
       break;
     case 2:
-      return 1 / delta(0, -1);
+      return deltaV(0, -1);
       break;
     case 3:
-      return delta(-1, 0);
+      return deltaH(-1, 0);
       break;
     case 4:
-      return delta(1, 0);
+      return deltaH(1, 0);
       break;
   }
 }
