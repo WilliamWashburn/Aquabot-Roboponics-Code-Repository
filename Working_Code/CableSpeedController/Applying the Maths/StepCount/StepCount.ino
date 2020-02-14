@@ -277,7 +277,7 @@ double delta(double dx, double dy) {
   double delx = (dia * PI * dx) / (200 * mc); double dely = (dia * PI * dy) / (200 * mc);
   double lACD = sqrt(pow(curX, 2) + pow(H - curY, 2)) + sqrt(pow(B - curX, 2) + pow(H - curY, 2)) - sqrt(pow(curX + delx, 2) + pow(H - curY - dely, 2)) - sqrt(pow(B - curX - delx, 2) + pow(H - curY - dely, 2));
   double lBCD = sqrt(pow(curX, 2) + pow(curY, 2)) + sqrt(pow(curX, 2) + pow(H - curY, 2)) - sqrt(pow(curX + delx, 2) + pow(curY + dely, 2)) - sqrt(pow(curX + delx, 2) + pow(H - curY - dely, 2));
-  double del = (lACD / lBCD) * ((200 * mc) / (dia * PI));
+  double del = (lACD) * ((200 * mc) / (dia * PI));
   curX = curX + delx; curY = curY + dely;
   Serial.println(curX); Serial.println(curY);
   return del;
