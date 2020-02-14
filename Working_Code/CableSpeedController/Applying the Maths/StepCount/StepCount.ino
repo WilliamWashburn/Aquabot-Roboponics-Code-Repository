@@ -28,7 +28,7 @@ int ENA_down = 2;
 int DIR_down = 3;
 int PUL_down = 4;
 
-int motordelay = 500; //this is the desired motor delay. If multiple motors are running, the time will be "cut" so that each motor is still experiencing this delay
+int motordelay = 500; //this is the desired motor delay. If multiple motors are running, the time will be "cut" so that each motor seems to be still experiencing this delay
 
 bool buttonLeftState;
 bool buttonRightState;
@@ -79,14 +79,6 @@ void setup() {
   digitalWrite(ENA_up, LOW);
   digitalWrite(ENA_down, LOW);
 
-  /*
-    //setting motor direction
-    digitalWrite(DIR_left,HIGH);
-    digitalWrite(DIR_right,HIGH);
-    digitalWrite(DIR_up,HIGH);
-    digitalWrite(DIR_down,HIGH);
-  */
-
 
   Serial.println("Setup Complete");
   Serial.println("Beginning loop, press a button to move that motor");
@@ -95,11 +87,13 @@ void setup() {
 void loop() {
   
   int delaytime = setDelay();
+
+  //read button states
   buttonLeftState = digitalRead(buttonLeft);
   buttonRightState = digitalRead(buttonRight);
   buttonUpState = digitalRead(buttonUp);
   buttonDownState = digitalRead(buttonDown);
-
+  
   if (buttonLeftState == LOW) {
     Serial.println("Button Pressed: Left");
     moveCartLeft();
