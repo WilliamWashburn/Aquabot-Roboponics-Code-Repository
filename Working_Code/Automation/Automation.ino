@@ -1,9 +1,19 @@
 #include <Aquabot.h>
+
+//for temperature sensor
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#define ONE_WIRE_BUS 8
+// Create a onewire instanace
+OneWire oneWire(ONE_WIRE_BUS);
+// Declare a DS18B20 Instance and assing the OneWire reference to it.
+DallasTemperature sensors(&oneWire);
+
 //--------------------------Variables---------------------------------------------------------------------------
 //Time start Settings:
 
-int startingHour = 2; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
-int startingMinutes = 30 ;
+int startingHour = 14; // set your starting hour here, not below at int hour. This ensures accurate daily correction of time
+int startingMinutes =30 ;
 int day = 0;
 
 //Time Accuracy settings
@@ -53,6 +63,9 @@ Time time(startingHour,
 Wifi wifi; //if initializer does not have inputs, dont put parentasis because the compiler will think its a function declaration
 double pHreading;
 double ECreading;
+double tempReading;
+
+bool photoshootToday = false; //for keeping track of if there was a photoshoot today
 //------------------------Setup--------------------------------------------------------------
 void setup() {
   Serial.begin(9600);
@@ -74,6 +87,8 @@ void setup() {
   //Serial.println(response);
   Serial1.println("O,EC,0");
   Serial1.println("O,TDS,1");
+
+  sensors.begin(); //begins temperature sensor
   
   Serial.println("Starting program..");
   
@@ -91,42 +106,52 @@ void setup() {
 //}
 //---------------------loop-----------------------------------------
 void loop() {
-  //double data = 12;
-  //wifi.uploadToThingSpeak(data,EC);
-
-  /*
-  pHreading = takepHReading();
-  Serial.print("pH reading: ");Serial.println(pHreading);
-  wifi.uploadToThingSpeak(pHreading,pH);
-
-  delay(1000);
-  ECreading = takeECReading();
-  Serial.print("EC reading: ");Serial.println(ECreading);
-  wifi.uploadToThingSpeak(ECreading,EC);
   
- */
+  //check to see if it is time to take sensor readings
   while (0 == time.minutes && 0 <= time.seconds && time.seconds<= 20){
     Serial.println("Uploading to thingspeak. Please wait...");
-    Serial.print("time.hours: ");Serial.println(time.hours);
-    Serial.print("time.seconds: ");Serial.println(time.seconds);
-    Serial.print("time.minutes: ");Serial.println(time.minutes);
     
     pHreading = takepHReading();
     Serial.print("pH reading: ");Serial.println(pHreading);
     Serial.print("Uploading...");wifi.uploadToThingSpeak(pHreading,pH);Serial.println("done.");
+    delay(500);
     
+    ECreading = takeECReading();
+    ECreading = takeECReading(); //this is repeated because for some reason, the first time it is called, it returns 0
+    if(ECreading == 0){Serial.println("EC ERROR");}
+    else{
+      Serial.print("EC reading: ");Serial.println(ECreading);
+      Serial.print("Uploading...");wifi.uploadToThingSpeak(ECreading,EC);Serial.println("done.");  
+    }
+    delay(500);
+    tempReading = takeTempReading();
+    Serial.print("temp reading: ");Serial.println(tempReading);
+    Serial.print("Uploading...");wifi.uploadToThingSpeak(tempReading,Temp);Serial.println("done.");
+    delay(500);
     
-    Serial.print("EC reading: ");Serial.println(ECreading);
-    Serial.print("Uploading...");wifi.uploadToThingSpeak(ECreading,EC);Serial.println("done.");  
-    time.updateTime();
-    Serial.println();
+    time.updateTime(); //keep updating time
   }
+  Serial.println("Finished taking sensor readings");
 
-  if (2 == time.minutes && 0 <= time.seconds && time.seconds <= 20 && (time.hours == 12 || time.hours == 24)){
+  
+  //check to see if it is time to photoshoot
+  if ((2 == time.minutes && (0 <= time.seconds && time.seconds <= 2) && time.hours == 24) && photoshootToday ==  false){
     photoshoot();
+    photoshootToday = true;
   }
 
+  if (photoshootToday == true && time.hours == 24 && time.minutes == 3) {photoshootToday = false;} //this just keeps photoshoot() from being called multiple times in the time window above
+
+  //check to see if the lights should be on or off
+  if (time.seconds == 0 ) {
+    if (time.checkLights()) {growLights.lightsOn();}
+    else {growLights.lightsOff();}
+  }
+
+  //handle serial inputs
   handleSerial();
+
+  //update the time
   time.updateTime();
 }
 
@@ -146,6 +171,10 @@ double takepHReading() {                                 //if the hardware seria
     return phReadingD;
 }
 
+double takeTempReading() {
+  sensors.requestTemperatures();
+  return sensors.getTempFByIndex(0);
+}
 
 
 
@@ -219,9 +248,11 @@ void handleSerial() {
         camera.up();
         break;
       case '1':
+        Serial.println("LIGHTS ON");
         growLights.lightsOn();
         break;
       case '0':
+        Serial.println("LIGHTS OFF");
         growLights.lightsOff();
         break;
       case 'c':
@@ -232,6 +263,12 @@ void handleSerial() {
         break;
       case '5':
         photoshoot();
+        break;
+      case 'x':
+        plateform.enable();cart.enable();camera.enable();
+        plateform.goToStepCount(20); //go to basically 0
+        cart.goToStepCount(0);
+        camera.goToStepCount(0);
         break;
         
       
@@ -246,7 +283,7 @@ void photoshoot(){
   plateform.enable();cart.enable();camera.enable();
   Serial.println("Motors enabled");
 
-  
+  /*
 //plateform level 1
   //plateform.goToStepCount(9289);
   cart.goToStepCount(250);
@@ -265,7 +302,7 @@ void photoshoot(){
   cart.goToStepCount(11154);
   camera.goToStepCount(174);
   takePhoto();
-  /*
+  
 //plateform level 2
   plateform.goToStepCount(41899);
   cart.goToStepCount(11154);
@@ -305,7 +342,7 @@ void photoshoot(){
   camera.goToStepCount(174);
   takePhoto();
 */
-/*
+
   //plateform level 4
   plateform.goToStepCount(102505);
   cart.goToStepCount(11154);
@@ -323,7 +360,7 @@ void photoshoot(){
   cart.goToStepCount(250);
   camera.goToStepCount(-237);
   takePhoto();
-  */
+  
 /*
   //plateform level 5
   plateform.goToStepCount(132342);
