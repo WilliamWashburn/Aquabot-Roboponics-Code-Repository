@@ -133,6 +133,7 @@ myCAM1.write_reg(ARDUCHIP_FRAMES, FRAMES_NUM);
 delay(1000);
 myCAM1.clear_fifo_flag();
 
+Serial.println("Setup complete");
 }
 //}
 
@@ -143,7 +144,7 @@ void loop() {
     myCAMSaveToSDFile(myCAM1);
   delay(5000);
   */
-
+  handleSerial();
   if(digitalRead(9) == HIGH) {
     digitalWrite(A0,HIGH);delay(50);digitalWrite(A0,LOW); //flash LED once to confirm request
     if(CAM1_EXIST) {
@@ -205,6 +206,7 @@ if(!outFile){
   return;
 }
 */
+
 myCAM.CS_LOW();
 myCAM.set_fifo_burst();
 while ( length-- )
@@ -252,3 +254,16 @@ while ( length-- )
 #else  // ENABLE_SOFTWARE_SPI_CLASS
 #error ENABLE_SOFTWARE_SPI_CLASS must be set non-zero in SdFat/SdFatConfig.h
 #endif  //ENABLE_SOFTWARE_SPI_CLASS
+
+
+void handleSerial() {
+  while (Serial.available() > 0) {
+    char incomingCharacter = Serial.read();
+    switch (incomingCharacter) {
+      case 'c':
+        Serial.println("capture requested");
+        myCAMSaveToSDFile(myCAM1);
+        break;
+    }
+  }
+}

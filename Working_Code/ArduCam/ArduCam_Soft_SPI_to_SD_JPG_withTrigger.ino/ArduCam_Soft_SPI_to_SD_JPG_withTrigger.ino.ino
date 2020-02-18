@@ -250,7 +250,11 @@ while ( length-- )
     is_header = true;
     myCAM.CS_HIGH();
     //Create a avi file
+    if (k==4) {
+      k=0;
+    }
     k = k + 1;
+    
     itoa(k, str, 10);
     strcat(str, ".jpg");
     //Open the new file
